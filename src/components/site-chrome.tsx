@@ -2,12 +2,6 @@ import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 
-const nav = [
-  { to: "/platform", label: "Platform" },
-  { to: "/pricing", label: "Pricing" },
-  { to: "/p/$tenantSlug/$projectSlug", label: "Sample project", params: { tenantSlug: "aranya-developers", projectSlug: "aranya-greens" } },
-] as const;
-
 export function SiteLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
@@ -17,11 +11,9 @@ export function SiteLayout({ children }: { children: ReactNode }) {
             Mavros<span className="text-accent">·</span>RealtyAI
           </Link>
           <nav className="hidden items-center gap-7 text-sm md:flex">
-            {nav.map((n) => (
-              <Link key={n.label} to={n.to} params={"params" in n ? n.params : undefined} className="text-muted-foreground hover:text-foreground" activeProps={{ className: "text-foreground" }}>
-                {n.label}
-              </Link>
-            ))}
+            <Link to="/platform" className="text-muted-foreground hover:text-foreground">Platform</Link>
+            <Link to="/pricing" className="text-muted-foreground hover:text-foreground">Pricing</Link>
+            <Link to="/p/$tenantSlug/$projectSlug" params={{ tenantSlug: "aranya-developers", projectSlug: "aranya-greens" }} className="text-muted-foreground hover:text-foreground">Sample project</Link>
           </nav>
           <div className="flex items-center gap-2">
             <Button asChild variant="ghost" size="sm"><Link to="/app">Workspace</Link></Button>

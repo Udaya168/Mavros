@@ -78,7 +78,7 @@ const mkUnits = (prefix: string, base: number): Unit[] =>
       config: three ? "3 BHK" : "2 BHK",
       carpetSqft: three ? 1340 + i * 5 : 960 + i * 4,
       priceInr: (three ? base * 1.4 : base) + i * 150000,
-      status: (["available", "available", "held", "booked"] as UnitStatus[])[i % 4],
+      status: (["available", "available", "held", "booked"] as const)[i % 4] as UnitStatus,
     };
   });
 
