@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useMemo, useState, type FormEvent } from "react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -92,8 +93,20 @@ function ProjectPage() {
     [project, config],
   );
   const from = Math.min(...project.units.filter((u) => u.status === "available").map((u) => u.priceInr));
-  const submit = (e: FormEvent) => {
+  const [busy, setBusy] = useState(false);
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    setBusy(true);
+    const { error } = await supabase.from("visit_requests").insert({
+      project_slug: project.slug,
+      full_name: String(fd.get("name") ?? "").trim(),
+      phone: String(fd.get("phone") ?? "").trim(),
+      preferred_date: String(fd.get("date") ?? ""),
+      consent: true,
+    });
+    setBusy(false);
+    if (error) { toast.error("Couldn't send your request. Please try again."); return; }
     setSent(true);
     toast.success("Thank you! A sales advisor will contact you shortly.");
   };
@@ -216,11 +229,11 @@ function ProjectPage() {
           <div className="rounded-lg border border-border bg-card p-6 sm:p-8"><p className="font-display text-2xl">Request received</p><p className="mt-2 text-muted-foreground">We'll be in touch soon.</p></div>
         ) : (
           <form onSubmit={submit} className="space-y-3 rounded-lg border border-border bg-card p-4 sm:p-6">
-            <Input required placeholder="Full name" maxLength={100} className="h-11" />
-            <Input required type="tel" inputMode="tel" placeholder="Mobile number" maxLength={20} className="h-11" />
-            <Input type="date" required className="h-11" />
+            <Input name="name" required placeholder="Full name" maxLength={100} className="h-11" />
+            <Input name="phone" required type="tel" inputMode="tel" placeholder="Mobile number" minLength={5} maxLength={20} className="h-11" />
+            <Input name="date" type="date" required className="h-11" />
             <label className="flex gap-2 text-xs text-muted-foreground"><input type="checkbox" required className="mt-0.5 h-4 w-4 shrink-0" /> I agree to be contacted by {tenant.name} about this project.</label>
-            <Button type="submit" className="h-11 w-full">Request visit</Button>
+            <Button type="submit" className="h-11 w-full" disabled={busy}>{busy ? "Sending…" : "Request visit"}</Button>
           </form>
         )}
       </section>

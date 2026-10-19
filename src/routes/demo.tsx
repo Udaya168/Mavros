@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { SiteLayout, Eyebrow } from "@/components/site-chrome";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/demo")({
   head: () => ({
@@ -23,8 +24,20 @@ export const Route = createFileRoute("/demo")({
 
 function Demo() {
   const [sent, setSent] = useState(false);
-  const submit = (e: FormEvent) => {
+  const [busy, setBusy] = useState(false);
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const f = e.currentTarget;
+    const v = (id: string) => (f.querySelector(`#${id}`) as HTMLInputElement | null)?.value.trim() ?? "";
+    setBusy(true);
+    const { error } = await supabase.from("demo_requests").insert({
+      name: v("n"),
+      company: v("c"),
+      email: v("e"),
+      message: `Phone: ${v("p")}\n${v("m")}`.slice(0, 2000),
+    });
+    setBusy(false);
+    if (error) { toast.error("Couldn't send your request. Please try again."); return; }
     setSent(true);
     toast.success("Thanks — our team will reach out within one business day.");
   };
