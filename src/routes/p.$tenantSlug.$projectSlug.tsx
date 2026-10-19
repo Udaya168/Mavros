@@ -139,9 +139,17 @@ function ProjectPage() {
       <section id="amenities" className="bg-secondary">
         <div className="mx-auto max-w-6xl px-6 py-16">
           <h2 className="font-display text-3xl">Amenities</h2>
-          <div className="mt-6 flex flex-wrap gap-3">
-            {project.amenities.map((a) => <span key={a} className="rounded-full border border-border bg-card px-4 py-2 text-sm">{a}</span>)}
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {project.amenities.map((a) => (
+              <figure key={a} className="group relative overflow-hidden rounded-lg">
+                <img src={amenityImages[a]} alt={a} loading="lazy" width={1024} height={1024} className="aspect-[4/3] w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/80 to-transparent px-4 pb-3 pt-10 text-background">
+                  {a}
+                </figcaption>
+              </figure>
+            ))}
           </div>
+          <p className="mt-3 text-xs text-muted-foreground">Images are artistic impressions.</p>
         </div>
       </section>
 
