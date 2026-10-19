@@ -1,5 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import interior from "@/assets/interior.jpg";
+import pool from "@/assets/pool.jpg";
+import garden from "@/assets/garden.jpg";
+import sales from "@/assets/sales.jpg";
 import { SiteLayout, Eyebrow } from "@/components/site-chrome";
 
 export const Route = createFileRoute("/")({
@@ -73,7 +77,31 @@ function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6">
+      <section className="mx-auto grid max-w-6xl gap-12 px-6 pb-24 md:grid-cols-2 md:items-center">
+        <img src={sales} alt="Sales advisor showing floor plans to buyers" loading="lazy" width={1280} height={896} className="rounded-lg object-cover" />
+        <div>
+          <Eyebrow>Sales handoff</Eyebrow>
+          <h2 className="mt-4 font-display text-4xl tracking-tight">Your team meets buyers who already know what they want.</h2>
+          <p className="mt-4 text-muted-foreground">Every handoff arrives with budget, preferred configuration, questions asked and a conversation summary — so the first call feels like the second.</p>
+        </div>
+      </section>
+
+      <section className="bg-primary py-20 text-primary-foreground">
+        <div className="mx-auto max-w-6xl px-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Buyer pages that sell the lifestyle</p>
+          <h2 className="mt-4 max-w-2xl font-display text-4xl tracking-tight">Approved media, beautifully presented.</h2>
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            {[{ s: interior, t: "Residences" }, { s: pool, t: "Amenities" }, { s: garden, t: "Open spaces" }].map((g) => (
+              <figure key={g.t} className="group relative overflow-hidden rounded-lg">
+                <img src={g.s} alt={g.t} loading="lazy" width={1280} height={896} className="aspect-[4/5] w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <figcaption className="absolute bottom-0 left-0 p-5 font-display text-2xl text-primary-foreground">{g.t}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto mt-24 max-w-6xl px-6">
         <div className="rounded-lg bg-secondary p-12 md:flex md:items-center md:justify-between">
           <div>
             <h2 className="font-display text-3xl">Start with one project.</h2>
