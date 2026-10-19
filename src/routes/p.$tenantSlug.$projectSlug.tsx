@@ -44,9 +44,10 @@ const photosByConfig: Record<string, Photo[]> = {
 };
 
 const unitPhoto = (config: string, i: number): Photo => {
-  const list = photosByConfig[config] ?? photosByConfig["2 BHK"];
-  return list[i % list.length];
+  const list = photosByConfig[config] ?? photosByConfig["2 BHK"] ?? [];
+  return list[i % list.length] ?? { src: residence2bhk, label: "2 BHK living room" };
 };
+
 
 import { formatInr, getProjectBySlug, tenant } from "@/lib/demo-data";
 
