@@ -207,30 +207,40 @@ function ProjectPage() {
       </section>
 
 
-      <section id="visit" className="mx-auto grid max-w-6xl gap-10 px-6 py-20 md:grid-cols-2">
+      <section id="visit" className="mx-auto grid max-w-6xl scroll-mt-28 gap-6 px-4 py-12 sm:px-6 md:grid-cols-2 md:gap-10 md:py-20">
         <div>
-          <h2 className="font-display text-4xl">Book a site visit</h2>
+          <h2 className="font-display text-3xl sm:text-4xl">Book a site visit</h2>
           <p className="mt-3 text-muted-foreground">Share your details and preferred configuration. An advisor will confirm a slot on WhatsApp or call.</p>
         </div>
         {sent ? (
-          <div className="rounded-lg border border-border bg-card p-8"><p className="font-display text-2xl">Request received</p><p className="mt-2 text-muted-foreground">We'll be in touch soon.</p></div>
+          <div className="rounded-lg border border-border bg-card p-6 sm:p-8"><p className="font-display text-2xl">Request received</p><p className="mt-2 text-muted-foreground">We'll be in touch soon.</p></div>
         ) : (
-          <form onSubmit={submit} className="space-y-3 rounded-lg border border-border bg-card p-6">
-            <Input required placeholder="Full name" maxLength={100} />
-            <Input required type="tel" placeholder="Mobile number" maxLength={20} />
-            <Input type="date" required />
-            <label className="flex gap-2 text-xs text-muted-foreground"><input type="checkbox" required /> I agree to be contacted by {tenant.name} about this project.</label>
-            <Button type="submit" className="w-full">Request visit</Button>
+          <form onSubmit={submit} className="space-y-3 rounded-lg border border-border bg-card p-4 sm:p-6">
+            <Input required placeholder="Full name" maxLength={100} className="h-11" />
+            <Input required type="tel" inputMode="tel" placeholder="Mobile number" maxLength={20} className="h-11" />
+            <Input type="date" required className="h-11" />
+            <label className="flex gap-2 text-xs text-muted-foreground"><input type="checkbox" required className="mt-0.5 h-4 w-4 shrink-0" /> I agree to be contacted by {tenant.name} about this project.</label>
+            <Button type="submit" className="h-11 w-full">Request visit</Button>
           </form>
         )}
       </section>
 
       <footer className="border-t border-border">
-        <div className="mx-auto max-w-6xl px-6 py-8 text-xs text-muted-foreground">
+        <div className="mx-auto max-w-6xl px-4 py-8 text-xs text-muted-foreground sm:px-6">
           <p>RERA: {project.reraId}. Details as provided by the developer.</p>
           <p className="mt-1">Powered by Mavros RealtyAI</p>
         </div>
       </footer>
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-4 py-3 backdrop-blur md:hidden">
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs text-muted-foreground">Starting from</p>
+            <p className="truncate font-display text-lg">{formatInr(from)}</p>
+          </div>
+          <Button asChild className="h-11 shrink-0 px-6"><a href="#visit">Book a visit</a></Button>
+        </div>
+      </div>
     </div>
   );
 }
