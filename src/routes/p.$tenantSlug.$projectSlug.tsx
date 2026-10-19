@@ -13,6 +13,11 @@ import amenityPool from "@/assets/amenity-pool.jpg";
 import amenityJogging from "@/assets/amenity-jogging.jpg";
 import amenityCoworking from "@/assets/amenity-coworking.jpg";
 import amenityKids from "@/assets/amenity-kids.jpg";
+import residence2bhk from "@/assets/residence-2bhk.jpg";
+import residence3bhk from "@/assets/residence-3bhk.jpg";
+import residenceBedroom from "@/assets/residence-bedroom.jpg";
+import residenceBalcony from "@/assets/residence-balcony.jpg";
+
 const amenityImages: Record<string, string> = {
   "Clubhouse": amenityClubhouse,
   "Lap pool": amenityPool,
@@ -20,6 +25,30 @@ const amenityImages: Record<string, string> = {
   "Co-working lounge": amenityCoworking,
   "Kids' play": amenityKids,
 };
+
+type Photo = { src: string; label: string };
+
+// Sample interiors rotate through the cards so the grid isn't repetitive.
+// Replace with the developer's approved unit images once storage is connected.
+const photosByConfig: Record<string, Photo[]> = {
+  "2 BHK": [
+    { src: residence2bhk, label: "2 BHK living room" },
+    { src: residenceBedroom, label: "Master bedroom" },
+    { src: residenceBalcony, label: "Balcony view" },
+  ],
+  "3 BHK": [
+    { src: residence3bhk, label: "3 BHK living room" },
+    { src: residenceBedroom, label: "Master bedroom" },
+    { src: residenceBalcony, label: "Balcony view" },
+  ],
+};
+
+const unitPhoto = (config: string, i: number): Photo => {
+  const list = photosByConfig[config] ?? photosByConfig["2 BHK"] ?? [];
+  return list[i % list.length] ?? { src: residence2bhk, label: "2 BHK living room" };
+};
+
+
 import { formatInr, getProjectBySlug, tenant } from "@/lib/demo-data";
 
 export const Route = createFileRoute("/p/$tenantSlug/$projectSlug")({
@@ -106,18 +135,38 @@ function ProjectPage() {
           </div>
         </div>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {units.map((u) => (
-            <div key={u.id} className="rounded-lg border border-border bg-card p-5">
-              <div className="flex items-center justify-between">
-                <p className="font-semibold">Unit {u.number}</p>
-                <Badge variant={u.status === "available" ? "default" : "secondary"}>{u.status === "available" ? "Available" : "On hold"}</Badge>
+          {units.map((u, i) => {
+            const photo = unitPhoto(u.config, i);
+            return (
+              <div key={u.id} className="overflow-hidden rounded-lg border border-border bg-card">
+                <figure className="relative">
+                  <img
+                    src={photo.src}
+                    alt={`${photo.label} — artistic impression`}
+                    loading="lazy"
+                    width={1024}
+                    height={768}
+                    className="aspect-[4/3] w-full object-cover transition-transform duration-700 hover:scale-105"
+                  />
+                  <figcaption className="absolute left-3 top-3 rounded bg-background/85 px-2 py-1 text-[10px] uppercase tracking-[0.12em] text-muted-foreground backdrop-blur">
+                    Artistic impression
+                  </figcaption>
+                </figure>
+                <div className="p-5">
+                  <div className="flex items-center justify-between">
+                    <p className="font-semibold">Unit {u.number}</p>
+                    <Badge variant={u.status === "available" ? "default" : "secondary"}>{u.status === "available" ? "Available" : "On hold"}</Badge>
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">{photo.label}</p>
+                  <p className="mt-3 text-sm text-muted-foreground">{u.config} · {u.carpetSqft} sq ft carpet</p>
+                  <p className="mt-1 font-display text-2xl">{formatInr(u.priceInr)}</p>
+                </div>
               </div>
-              <p className="mt-3 text-sm text-muted-foreground">{u.config} · {u.carpetSqft} sq ft carpet</p>
-              <p className="mt-1 font-display text-2xl">{formatInr(u.priceInr)}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
-        <p className="mt-4 text-xs text-muted-foreground">Availability and prices are indicative and confirmed by the sales team.</p>
+        <p className="mt-4 text-xs text-muted-foreground">Residence images are artistic impressions. Availability and prices are indicative and confirmed by the sales team.</p>
+
       </section>
 
       <section id="gallery" className="mx-auto max-w-6xl px-6 pb-20">
