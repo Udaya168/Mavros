@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Sample tenant data lives in src/lib/demo-data.ts until Lovable Cloud is enabled; pages read only from there so swapping to real storage touches one module.
+- Route groups: marketing at top level, buyer pages under /p/$tenantSlug/$projectSlug, workspace under /app, staff console at /control.
