@@ -14,7 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      demo_requests: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string
+          id: string
+          message: string | null
+          name: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          message?: string | null
+          name: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string | null
+          name?: string
+        }
+        Relationships: []
+      }
+      visit_requests: {
+        Row: {
+          consent: boolean
+          created_at: string
+          full_name: string
+          id: string
+          phone: string
+          preferred_date: string
+          project_slug: string
+        }
+        Insert: {
+          consent?: boolean
+          created_at?: string
+          full_name: string
+          id?: string
+          phone: string
+          preferred_date: string
+          project_slug: string
+        }
+        Update: {
+          consent?: boolean
+          created_at?: string
+          full_name?: string
+          id?: string
+          phone?: string
+          preferred_date?: string
+          project_slug?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
