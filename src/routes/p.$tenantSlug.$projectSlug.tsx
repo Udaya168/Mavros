@@ -8,6 +8,18 @@ import { BackButton } from "@/components/back-button";
 import interior from "@/assets/interior.jpg";
 import pool from "@/assets/pool.jpg";
 import garden from "@/assets/garden.jpg";
+import amenityClubhouse from "@/assets/amenity-clubhouse.jpg";
+import amenityPool from "@/assets/amenity-pool.jpg";
+import amenityJogging from "@/assets/amenity-jogging.jpg";
+import amenityCoworking from "@/assets/amenity-coworking.jpg";
+import amenityKids from "@/assets/amenity-kids.jpg";
+const amenityImages: Record<string, string> = {
+  "Clubhouse": amenityClubhouse,
+  "Lap pool": amenityPool,
+  "Jogging loop": amenityJogging,
+  "Co-working lounge": amenityCoworking,
+  "Kids' play": amenityKids,
+};
 import { formatInr, getProjectBySlug, tenant } from "@/lib/demo-data";
 
 export const Route = createFileRoute("/p/$tenantSlug/$projectSlug")({
