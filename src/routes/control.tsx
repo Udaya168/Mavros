@@ -1,6 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { BackButton } from "@/components/back-button";
 import { tenants } from "@/lib/demo-data";
 
 export const Route = createFileRoute("/control")({
@@ -18,7 +19,7 @@ function Control() {
   return (
     <div className="min-h-screen bg-sidebar text-sidebar-foreground">
       <div className="mx-auto max-w-6xl px-6 py-10">
-        <Link to="/" className="text-sm opacity-70">← Mavros</Link>
+        <BackButton className="text-sidebar-foreground/70 hover:text-sidebar-foreground" />
         <h1 className="mt-3 font-display text-4xl">Control Center</h1>
         <p className="mt-1 opacity-70">Tenant provisioning and platform oversight · restricted to Mavros staff</p>
         <div className="mt-8 rounded-lg bg-card text-card-foreground">

@@ -1,5 +1,6 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { LayoutDashboard, Building2, Users, History, Settings } from "lucide-react";
+import { BackButton } from "@/components/back-button";
 import { tenant } from "@/lib/demo-data";
 
 export const Route = createFileRoute("/app")({
@@ -43,7 +44,7 @@ function AppLayout() {
         <div className="flex gap-4 overflow-x-auto border-b border-border px-4 py-3 text-sm md:hidden">
           {items.map((i) => <Link key={i.to} to={i.to} className="whitespace-nowrap">{i.label}</Link>)}
         </div>
-        <div className="mx-auto max-w-6xl p-6 md:p-10"><Outlet /></div>
+        <div className="mx-auto max-w-6xl p-6 md:p-10"><BackButton className="mb-6" /><Outlet /></div>
       </div>
     </div>
   );

@@ -1,8 +1,10 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
+import { BackButton } from "@/components/back-button";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 
 export function SiteLayout({ children }: { children: ReactNode }) {
+  const isHome = useLocation({ select: (l) => l.pathname === "/" });
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur">
@@ -21,6 +23,9 @@ export function SiteLayout({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
+      {!isHome && (
+        <div className="mx-auto max-w-6xl px-6 pt-6"><BackButton /></div>
+      )}
       <main>{children}</main>
       <footer className="mt-24 border-t border-border">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-10 text-sm text-muted-foreground md:flex-row md:justify-between">

@@ -4,6 +4,10 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { BackButton } from "@/components/back-button";
+import interior from "@/assets/interior.jpg";
+import pool from "@/assets/pool.jpg";
+import garden from "@/assets/garden.jpg";
 import { formatInr, getProjectBySlug, tenant } from "@/lib/demo-data";
 
 export const Route = createFileRoute("/p/$tenantSlug/$projectSlug")({
@@ -57,9 +61,9 @@ function ProjectPage() {
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
-          <p className="font-display text-lg">{tenant.name}</p>
+          <div className="flex items-center gap-5"><BackButton /><p className="font-display text-lg">{tenant.name}</p></div>
           <nav className="hidden gap-6 text-sm text-muted-foreground md:flex">
-            <a href="#residences">Residences</a><a href="#amenities">Amenities</a><a href="#visit">Book a visit</a>
+            <a href="#residences">Residences</a><a href="#gallery">Gallery</a><a href="#amenities">Amenities</a><a href="#visit">Book a visit</a>
           </nav>
           <Button asChild size="sm"><a href="#visit">Book a visit</a></Button>
         </div>
@@ -102,6 +106,22 @@ function ProjectPage() {
           ))}
         </div>
         <p className="mt-4 text-xs text-muted-foreground">Availability and prices are indicative and confirmed by the sales team.</p>
+      </section>
+
+      <section id="gallery" className="mx-auto max-w-6xl px-6 pb-20">
+        <h2 className="font-display text-4xl">Gallery</h2>
+        <div className="mt-8 grid gap-4 md:grid-cols-3 md:grid-rows-2">
+          <figure className="overflow-hidden rounded-lg md:col-span-2 md:row-span-2">
+            <img src={interior} alt="Living room with park views" loading="lazy" width={1280} height={896} className="h-full w-full object-cover transition-transform duration-700 hover:scale-105" />
+          </figure>
+          <figure className="overflow-hidden rounded-lg">
+            <img src={pool} alt="Rooftop lap pool at sunset" loading="lazy" width={1280} height={896} className="h-full w-full object-cover transition-transform duration-700 hover:scale-105" />
+          </figure>
+          <figure className="overflow-hidden rounded-lg">
+            <img src={garden} alt="Central park and jogging loop" loading="lazy" width={1280} height={896} className="h-full w-full object-cover transition-transform duration-700 hover:scale-105" />
+          </figure>
+        </div>
+        <p className="mt-3 text-xs text-muted-foreground">Images are artistic impressions.</p>
       </section>
 
       <section id="amenities" className="bg-secondary">
