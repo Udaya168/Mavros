@@ -35,10 +35,10 @@ function AuthCallback() {
       description="This sign-in or verification link is invalid or has expired. You can request a new link or sign in again."
     >
       <div className="space-y-3">
-        <Button asChild className="h-11 w-full bg-[#1268e8] text-white hover:bg-[#0d58cb]">
+        <Button asChild className="auth-primary-action h-11 w-full">
           <Link to="/login">Go to sign in</Link>
         </Button>
-        <Button asChild variant="outline" className="h-11 w-full">
+        <Button asChild variant="outline" className="auth-secondary-action h-11 w-full">
           <Link to="/forgot-password">Request a password reset</Link>
         </Button>
       </div>

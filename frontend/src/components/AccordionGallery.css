@@ -1,0 +1,198 @@
+.mavros-platform-gallery {
+  --ag-accent: #39d5e5;
+  --ag-overlay: #080909;
+  --ag-text: #f4f0e8;
+  --ag-gap: 10px;
+  --ag-radius: 12px;
+  --ag-media-size: 320px;
+
+  display: flex;
+  flex-direction: row;
+  gap: var(--ag-gap);
+  width: 100%;
+  max-width: 100%;
+  perspective: 1400px;
+  perspective-origin: center;
+}
+
+.mavros-platform-gallery__panel {
+  position: relative;
+  display: block;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  background: #101212;
+  color: var(--ag-text);
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+  outline: none;
+  transform-origin: center;
+  transform-style: preserve-3d;
+  box-shadow: 0 16px 38px -24px rgb(0 0 0 / 90%);
+  will-change: flex-grow, transform;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mavros-platform-gallery__panel:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--ag-accent),
+    0 16px 38px -24px rgb(0 0 0 / 90%);
+}
+
+.mavros-platform-gallery__frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.mavros-platform-gallery__media {
+  --ag-gray: 0;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--ag-media-size);
+  height: 100%;
+  filter: grayscale(var(--ag-gray));
+  will-change: transform, filter;
+}
+
+.mavros-platform-gallery--vertical .mavros-platform-gallery__media {
+  width: 100%;
+  height: var(--ag-media-size);
+}
+
+.mavros-platform-gallery__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.mavros-platform-gallery__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      180deg,
+      rgb(8 9 9 / 8%) 15%,
+      color-mix(in srgb, var(--ag-overlay) 18%, transparent) 48%,
+      color-mix(in srgb, var(--ag-overlay) 96%, transparent) 100%
+    ),
+    color-mix(in srgb, var(--ag-overlay) calc(var(--ag-dim, 0.34) * 100%), transparent);
+}
+
+.mavros-platform-gallery__caption {
+  position: absolute;
+  z-index: 1;
+  right: 18px;
+  bottom: 20px;
+  left: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.mavros-platform-gallery__bar {
+  flex: 0 0 auto;
+  width: 3px;
+  height: 34px;
+  margin-top: 2px;
+  border-radius: 3px;
+  background: var(--ag-accent);
+  opacity: 0;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--ag-accent) 60%, transparent);
+}
+
+.mavros-platform-gallery__copy {
+  display: block;
+  min-width: 0;
+  opacity: 0;
+  text-shadow: 0 2px 14px rgb(0 0 0 / 55%);
+}
+
+.mavros-platform-gallery__title {
+  display: block;
+  font-family: inherit;
+  font-size: clamp(1rem, 1.55vw, 1.5rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+}
+
+.mavros-platform-gallery__description {
+  display: block;
+  max-width: 34rem;
+  margin-top: 9px;
+  color: rgb(244 240 232 / 76%);
+  font-size: clamp(0.68rem, 0.8vw, 0.78rem);
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .mavros-platform-gallery {
+    --ag-gap: 8px;
+
+    height: 360px !important;
+  }
+
+  .mavros-platform-gallery__caption {
+    right: 12px;
+    bottom: 14px;
+    left: 12px;
+    gap: 9px;
+  }
+
+  .mavros-platform-gallery__title {
+    font-size: clamp(0.9rem, 1.8vw, 1.2rem);
+  }
+}
+
+@media (max-width: 640px) {
+  .mavros-platform-gallery {
+    flex-direction: column;
+    height: 430px !important;
+    perspective: none;
+  }
+
+  .mavros-platform-gallery__panel {
+    transform: none !important;
+  }
+
+  .mavros-platform-gallery__media {
+    width: 100%;
+    height: var(--ag-media-size);
+  }
+
+  .mavros-platform-gallery__caption {
+    right: 15px;
+    bottom: 12px;
+    left: 15px;
+  }
+
+  .mavros-platform-gallery__title {
+    font-size: 1rem;
+  }
+
+  .mavros-platform-gallery__description {
+    margin-top: 5px;
+    font-size: 0.68rem;
+    line-height: 1.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mavros-platform-gallery__panel,
+  .mavros-platform-gallery__media {
+    will-change: auto;
+  }
+}

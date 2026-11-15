@@ -104,6 +104,7 @@ function Login() {
     <PublicAuthLayout
       title="Welcome back"
       description="Sign in to continue to your Mavros account."
+      appearance="login"
     >
       <form className="space-y-5" onSubmit={handleSubmit}>
         <div className="space-y-2">

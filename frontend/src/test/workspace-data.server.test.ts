@@ -15,6 +15,7 @@ vi.mock("../../../backend/auth/developer-authentication.server", () => ({
 
 import {
   listContactsServer,
+  listVisitsServer,
   saveArticleServer,
   saveCampaignServer,
   saveTaskServer,
@@ -91,6 +92,38 @@ describe("organization workflow server authorization", () => {
       listContactsServer({ organizationId: otherOrganizationId, search: "", page: 0 }),
     ).rejects.toMatchObject({ status: 403 });
     expect(from).not.toHaveBeenCalled();
+  });
+
+  it("loads visit project and lead names through organization-scoped foreign keys", async () => {
+    const visitResult = {
+      data: [
+        {
+          id: recordId,
+          project: [{ name: "Mavros Residences" }],
+          lead: [{ full_name: "Workspace Buyer" }],
+        },
+      ],
+      error: null,
+    };
+    const query = {
+      select: vi.fn(() => query),
+      eq: vi.fn(() => query),
+      order: vi.fn(() => query),
+      limit: vi.fn(() => query),
+      then: (resolve: (result: typeof visitResult) => unknown) =>
+        Promise.resolve(visitResult).then(resolve),
+    };
+    const from = vi.fn(() => query);
+    createSupabaseServerClientMock.mockReturnValue({ from });
+
+    const visits = await listVisitsServer(organizationId);
+
+    expect(from).toHaveBeenCalledWith("developer_site_visits");
+    expect(query.select).toHaveBeenCalledWith(
+      expect.stringContaining("lead:developer_leads!developer_site_visits_lead_fk(full_name)"),
+    );
+    expect(query.eq).toHaveBeenCalledWith("organization_id", organizationId);
+    expect(visits).toEqual(visitResult.data);
   });
 
   it("rejects sales assignment to another user", async () => {

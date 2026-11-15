@@ -16,20 +16,27 @@ import {
   MessageCircle,
   MousePointerClick,
   PhoneCall,
-  Play,
   Send,
   ShieldCheck,
-  Sparkles,
-  Video,
   Workflow,
   X,
   type LucideIcon,
 } from "lucide-react";
-import { useRef, useState, type FormEvent, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from "react";
+import amenityClubhouse from "@/assets/amenity-clubhouse.jpg";
+import amenityJogging from "@/assets/amenity-jogging.jpg";
 import amenityPool from "@/assets/amenity-pool.jpg";
 import garden from "@/assets/garden.jpg";
 import interior from "@/assets/interior.jpg";
+import pool from "@/assets/pool.jpg";
+import residenceBalcony from "@/assets/residence-balcony.jpg";
+import residenceBedroom from "@/assets/residence-bedroom.jpg";
+import residence3bhk from "@/assets/residence-3bhk.jpg";
+import sales from "@/assets/sales.jpg";
 import { AccountMenu } from "@/components/public-app/account-menu";
+import AccordionGallery from "@/components/AccordionGallery";
+import CircularCarousel from "@/components/CircularCarousel";
+import FolderFloat from "@/components/FolderFloat";
 import { getPublicUserSession } from "@/lib/public-auth";
 
 export const Route = createFileRoute("/")({
@@ -111,6 +118,45 @@ const steps = [
   },
 ];
 
+const solutionPanels = [
+  {
+    src: residenceBalcony,
+    alt: "Luxury apartment balcony overlooking landscaped grounds",
+    title: "Luxury Apartments",
+    subtitle: "Elevated city living",
+  },
+  {
+    src: pool,
+    alt: "Contemporary residential property beside a private swimming pool",
+    title: "Modern Villas",
+    subtitle: "Architecture and escape",
+  },
+  {
+    src: interior,
+    alt: "Premium living room with expansive windows and warm finishes",
+    title: "Premium Living Rooms",
+    subtitle: "Spaces made for living",
+  },
+  {
+    src: amenityJogging,
+    alt: "Landscaped residential community garden and walking path",
+    title: "Residential Communities",
+    subtitle: "A connected neighborhood",
+  },
+  {
+    src: residenceBedroom,
+    alt: "Refined luxury bedroom with a landscaped outlook",
+    title: "Luxury Interiors",
+    subtitle: "Thoughtful details",
+  },
+  {
+    src: sales,
+    alt: "Property consultant presenting a development to prospective buyers",
+    title: "Property Consultation",
+    subtitle: "Personal guidance",
+  },
+];
+
 const faqs = [
   {
     question: "What is Mavros RealtyAI?",
@@ -159,9 +205,98 @@ const integrationOptions: { label: string; icon: LucideIcon }[] = [
   { label: "Email", icon: Send },
   { label: "Calendars", icon: CalendarDays },
   { label: "CRM & ERP", icon: Building2 },
-  { label: "Campaign analytics", icon: BarChart3 },
-  { label: "Veytrix.AI", icon: Sparkles },
+  { label: "Campaign Analytics", icon: BarChart3 },
+  { label: "Veytrix.AI", icon: Layers3 },
 ];
+
+const trustPrinciples: { title: string; description: string; icon: LucideIcon }[] = [
+  {
+    title: "Approved answers",
+    description: "Ground buyer-facing answers in project facts reviewed by the developer.",
+    icon: Check,
+  },
+  {
+    title: "Human handoff",
+    description: "Make it easier to involve a person when a detail is uncertain.",
+    icon: PhoneCall,
+  },
+  {
+    title: "Privacy-conscious capture",
+    description: "Collect only what a real enquiry workflow needs, with clear expectations.",
+    icon: ShieldCheck,
+  },
+  {
+    title: "Controlled access",
+    description: "Design boundaries around access to each developer's information.",
+    icon: Building2,
+  },
+  {
+    title: "Creative review",
+    description: "Preview and approve marketing assets before they are used.",
+    icon: Film,
+  },
+  {
+    title: "Thoughtful integrations",
+    description: "Connect only the channels and systems agreed for a project.",
+    icon: Workflow,
+  },
+];
+
+const capabilities: {
+  title: string;
+  description: string;
+  image: string;
+  imageAlt: string;
+}[] = [
+  {
+    title: "AI Property Advisor",
+    description:
+      "Help buyers explore project information through an approachable, project-aware conversation concept.",
+    image: interior,
+    imageAlt: "Warm contemporary living space",
+  },
+  {
+    title: "Property Matching",
+    description:
+      "Help buyers compare layouts and project details relevant to their needs—based on information the developer supplies.",
+    image: residence3bhk,
+    imageAlt: "Warm contemporary living room in a sample home",
+  },
+  {
+    title: "Lead Qualification",
+    description: "Organize requirements and enquiry context for a more informed sales handoff.",
+    image: sales,
+    imageAlt: "A sales team discussing a residential development with prospective buyers",
+  },
+  {
+    title: "Buyer Engagement",
+    description:
+      "Help buyers explore project details, understand next steps and stay connected throughout their journey.",
+    image: residenceBedroom,
+    imageAlt: "A thoughtfully furnished bedroom in a sample residence",
+  },
+  {
+    title: "Project Discovery",
+    description:
+      "Bring project information, home configurations and amenities together for easier exploration.",
+    image: amenityClubhouse,
+    imageAlt: "Clubhouse at an illustrative residential development",
+  },
+  {
+    title: "Sales Follow-up",
+    description:
+      "Carry buyer preferences and enquiry context into a timely, informed sales handoff.",
+    image: garden,
+    imageAlt: "Landscaped residential development",
+  },
+];
+
+const platformGalleryItems = capabilities.map((feature) => ({
+  image: feature.image,
+  label: feature.title,
+  description: feature.description,
+  alt: feature.imageAlt,
+}));
 
 type ChatMessage = { role: "buyer" | "advisor"; text: string };
 
@@ -192,6 +327,8 @@ function getDemoReply(question: string) {
 function Home() {
   const initialAuthSession = Route.useLoaderData();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
+  const [compactIntegrations, setCompactIntegrations] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -205,6 +342,85 @@ function Home() {
   ]);
   const [chatInput, setChatInput] = useState("");
   const [formPreviewed, setFormPreviewed] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 640px)");
+    const update = () => setCompactIntegrations(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    const page = document.querySelector<HTMLElement>(".home-page");
+    const header = page?.querySelector<HTMLElement>(".home-header");
+    if (!page || !header) return;
+
+    const syncHeader = () => header.toggleAttribute("data-scrolled", window.scrollY > 12);
+    syncHeader();
+    window.addEventListener("scroll", syncHeader, { passive: true });
+
+    const heroVisual = page.querySelector<HTMLElement>(".home-hero-visual");
+    const heroImage = heroVisual?.querySelector<HTMLElement>("[data-hero-image]");
+    const moveHeroImage = (event: PointerEvent) => {
+      if (!heroVisual || !heroImage || event.pointerType === "touch") return;
+      const bounds = heroVisual.getBoundingClientRect();
+      const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+      const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+      heroImage.style.setProperty("--hero-x", `${x * -8}px`);
+      heroImage.style.setProperty("--hero-y", `${y * -8}px`);
+    };
+    const resetHeroImage = () => {
+      heroImage?.style.setProperty("--hero-x", "0px");
+      heroImage?.style.setProperty("--hero-y", "0px");
+    };
+    heroVisual?.addEventListener("pointermove", moveHeroImage);
+    heroVisual?.addEventListener("pointerleave", resetHeroImage);
+
+    if (!("IntersectionObserver" in window)) {
+      return () => {
+        window.removeEventListener("scroll", syncHeader);
+        heroVisual?.removeEventListener("pointermove", moveHeroImage);
+        heroVisual?.removeEventListener("pointerleave", resetHeroImage);
+      };
+    }
+
+    const revealTargets = page.querySelectorAll<HTMLElement>("main > section .home-container > *");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          (entry.target as HTMLElement).dataset["visible"] = "true";
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -36px 0px" },
+    );
+    revealTargets.forEach((target) => {
+      target.dataset["reveal"] = "true";
+      observer.observe(target);
+    });
+    const sectionObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setActiveSection(`#${entry.target.id}`);
+        }
+      },
+      { rootMargin: "-35% 0px -60% 0px" },
+    );
+    navLinks.forEach(({ href }) => {
+      const section = page.querySelector<HTMLElement>(href);
+      if (section) sectionObserver.observe(section);
+    });
+    page.dataset["motionReady"] = "true";
+
+    return () => {
+      window.removeEventListener("scroll", syncHeader);
+      heroVisual?.removeEventListener("pointermove", moveHeroImage);
+      heroVisual?.removeEventListener("pointerleave", resetHeroImage);
+      observer.disconnect();
+      sectionObserver.disconnect();
+    };
+  }, []);
 
   const navigateFromMobileMenu = (event: MouseEvent<HTMLAnchorElement>) => {
     const hash = event.currentTarget.hash;
@@ -240,16 +456,16 @@ function Home() {
   };
 
   return (
-    <div className="home-page min-h-screen bg-[#f7f8fb] text-[#102039]">
-      <header className="home-header sticky top-0 z-50 border-b border-[#dbe2ec]/70 bg-[#f7f8fb]/90 backdrop-blur-xl">
+    <div className="home-page home-editorial min-h-screen bg-[#050505] text-[#f5f2ec]">
+      <header className="home-header sticky top-0 z-50 border-b border-white/10 bg-[#050505]/70 backdrop-blur-xl">
         <div className="home-container flex h-[72px] items-center justify-between">
           <a href="#top" className="flex items-center gap-3" aria-label="Mavros RealtyAI home">
-            <span className="flex size-9 items-center justify-center rounded-xl bg-[#102039] text-white">
+            <span className="flex size-9 items-center justify-center rounded-full border border-white/20 text-[#f5f2ec]">
               <Building2 size={19} strokeWidth={1.8} />
             </span>
             <span className="leading-none">
-              <span className="block text-[15px] font-bold tracking-[0.18em]">MAVROS</span>
-              <span className="mt-1 block text-[10px] font-medium tracking-[0.12em] text-[#68778c]">
+              <span className="block text-[15px] font-semibold tracking-[0.22em]">MAVROS</span>
+              <span className="mt-1 block text-[10px] font-medium tracking-[0.2em] text-white/55">
                 REALTYAI
               </span>
             </span>
@@ -260,7 +476,8 @@ function Home() {
               <a
                 key={link.href}
                 href={link.href}
-                className="rounded-sm text-xs font-medium text-[#52627a] transition-colors hover:text-[#1268e8] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#1268e8] active:text-[#0d58cb] xl:text-[13px]"
+                aria-current={activeSection === link.href ? "location" : undefined}
+                className="home-nav-link rounded-sm text-xs font-medium text-white/70 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#55ddf2] active:text-white xl:text-[13px]"
               >
                 {link.label}
               </a>
@@ -271,7 +488,7 @@ function Home() {
             <AccountMenu session={initialAuthSession} />
             <a
               href="#pilot"
-              className="inline-flex min-h-10 items-center gap-2 rounded-full bg-[#1268e8] px-4 text-xs font-semibold text-white shadow-[0_8px_22px_rgba(18,104,232,0.18)] transition hover:bg-[#0d58cb] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1268e8] active:scale-[0.98] xl:px-5 xl:text-[13px]"
+              className="inline-flex min-h-10 items-center gap-2 rounded-full border border-white/30 bg-white px-4 text-xs font-semibold text-[#080808] transition hover:bg-[#f5f2ec] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#55ddf2] active:scale-[0.98] xl:px-5 xl:text-[13px]"
             >
               Book a demo <ArrowUpRight size={15} />
             </a>
@@ -279,7 +496,7 @@ function Home() {
           <button
             ref={menuButtonRef}
             type="button"
-            className="inline-flex size-11 items-center justify-center rounded-full border border-[#dbe2ec] bg-white text-[#102039] transition hover:bg-[#f8faff] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1268e8] active:scale-[0.96] lg:hidden"
+            className="inline-flex size-11 items-center justify-center rounded-full border border-white/25 bg-black/20 text-white transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#55ddf2] active:scale-[0.96] lg:hidden"
             aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
             aria-expanded={menuOpen}
             aria-controls="mobile-navigation"
@@ -295,7 +512,7 @@ function Home() {
           <nav
             id="mobile-navigation"
             aria-label="Mobile navigation"
-            className="border-t border-[#dbe2ec] bg-[#f7f8fb] py-4 lg:hidden"
+            className="border-t border-white/10 bg-[#0b0b0b] py-4 lg:hidden"
             onKeyDown={(event) => {
               if (event.key === "Escape") {
                 setMenuOpen(false);
@@ -309,7 +526,7 @@ function Home() {
                   key={link.href}
                   href={link.href}
                   onClick={navigateFromMobileMenu}
-                  className="rounded-xl px-3 py-3 text-sm font-medium text-[#33435b] hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1268e8] active:bg-[#eaf1ff]"
+                  className="rounded-xl px-3 py-3 text-sm font-medium text-white/75 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#55ddf2] active:bg-white/10"
                 >
                   {link.label}
                 </a>
@@ -323,7 +540,7 @@ function Home() {
                 <a
                   href="#pilot"
                   onClick={navigateFromMobileMenu}
-                  className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-full bg-[#1268e8] px-4 text-sm font-semibold text-white transition hover:bg-[#0d58cb] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1268e8] active:scale-[0.98]"
+                  className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-full bg-white px-4 text-sm font-semibold text-black transition hover:bg-[#f5f2ec] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#55ddf2] active:scale-[0.98]"
                 >
                   Book a demo <ArrowUpRight size={16} />
                 </a>
@@ -334,23 +551,18 @@ function Home() {
       </header>
 
       <main id="top">
-        <section className="relative isolate">
-          <div className="pointer-events-none absolute right-0 top-20 -z-10 size-[min(520px,65vw)] rounded-full bg-[radial-gradient(circle,_#d9e9ff_0%,_transparent_72%)] opacity-70" />
-          <div className="home-container grid min-w-0 gap-10 pb-14 pt-10 sm:gap-12 sm:pb-16 sm:pt-14 lg:grid-cols-2 lg:items-center lg:gap-8 lg:py-6">
+        <section className="home-hero relative isolate">
+          <div className="home-container home-hero-content grid min-w-0 gap-10 pb-14 pt-10 sm:gap-12 sm:pb-16 sm:pt-14 lg:grid-cols-2 lg:items-center lg:gap-8 lg:py-6">
             <div className="relative z-10 min-w-0 max-w-[650px]">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#dce6f3] bg-white/80 px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#49607f]">
-                <span className="size-1.5 rounded-full bg-[#1d78ee]" />
-                Property sales, thoughtfully connected
-              </div>
-              <h1 className="mt-6 max-w-[12ch] font-display text-[clamp(2.75rem,5.4vw,5.25rem)] leading-[0.98] tracking-[-0.055em] text-[#102039] sm:mt-7">
-                Turn property interest into{" "}
-                <span className="text-[#1268e8]">sales conversations.</span>
+              <h1 className="home-hero-title mt-0 max-w-[12ch] font-display text-[clamp(2.75rem,5.4vw,5.25rem)] leading-[0.98] tracking-[-0.055em] text-[#102039]">
+                Turn Property Interest Into{" "}
+                <span className="text-[#1268e8]">Sales Conversations.</span>
               </h1>
               <p className="mt-5 max-w-[570px] text-base leading-7 text-[#596a82] sm:mt-7 sm:text-lg sm:leading-8">
                 Bring property discovery, buyer questions and organized follow-up into one
                 intelligent workflow. Create the campaigns that start it all with Veytrix.AI.
               </p>
-              <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row">
+              <div className="home-hero-actions mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row">
                 <a
                   href="#pilot"
                   className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#1268e8] px-6 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(18,104,232,0.2)] transition hover:-translate-y-0.5 hover:bg-[#0d58cb] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1268e8] active:scale-[0.98]"
@@ -367,7 +579,7 @@ function Home() {
               <p className="mt-5 text-xs font-medium tracking-wide text-[#77869b] sm:mt-7">
                 For property developers, marketing teams and sales teams.
               </p>
-              <div className="mt-7 flex flex-wrap gap-x-6 gap-y-3 border-t border-[#dbe2ec] pt-5 text-[12px] font-medium text-[#4d5d74] sm:mt-9 sm:pt-6">
+              <div className="home-hero-features mt-7 flex flex-wrap gap-x-6 gap-y-3 border-t border-[#dbe2ec] pt-5 text-[12px] font-medium text-[#4d5d74] sm:mt-9 sm:pt-6">
                 <span className="flex items-center gap-2">
                   <Check size={14} className="text-[#1268e8]" /> Buyer-ready project pages
                 </span>
@@ -380,35 +592,19 @@ function Home() {
               </div>
             </div>
 
-            <div className="relative mx-auto min-w-0 w-full max-w-[660px] lg:ml-auto">
-              <div className="home-hero-glow absolute -inset-4 -z-10 rounded-[38px] bg-gradient-to-br from-[#dfeaff] via-[#eef3fb] to-[#e8f6fa] blur-2xl" />
-              <div className="overflow-hidden rounded-[28px] border border-white/80 bg-white p-2.5 shadow-[0_32px_100px_rgba(31,56,91,0.18)] sm:p-3">
-                <div className="relative aspect-[1.35/1] overflow-hidden rounded-[21px] sm:aspect-[1.65/1]">
+            <div className="home-hero-visual relative mx-auto min-w-0 w-full max-w-[660px] lg:ml-auto">
+              <div className="home-hero-visual-frame overflow-hidden rounded-[28px] border border-white/80 bg-white p-2.5 shadow-[0_32px_100px_rgba(31,56,91,0.18)] sm:p-3">
+                <div className="home-hero-image-wrap relative aspect-[1.35/1] overflow-hidden rounded-[21px] sm:aspect-[1.65/1]">
                   <img
-                    src={garden}
-                    alt="Landscape architecture at a sample residential project"
+                    src={amenityPool}
+                    alt="Contemporary residential towers around an illuminated pool at dusk"
                     width={1280}
                     height={896}
                     fetchPriority="high"
+                    data-hero-image
                     className="absolute inset-0 size-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#07172d]/90 via-[#07172d]/15 to-[#07172d]/5" />
-                  <div className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full border border-white/25 bg-[#101c31]/65 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-white backdrop-blur-md sm:left-7 sm:top-7">
-                    <span className="size-1.5 rounded-full bg-[#88e1cb]" />
-                    Illustrative buyer journey
-                  </div>
-                  <div className="absolute bottom-6 left-5 max-w-[280px] text-white sm:bottom-8 sm:left-7">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/70">
-                      Project discovery
-                    </p>
-                    <h2 className="mt-2 font-display text-3xl leading-tight sm:text-4xl">
-                      Find a place to call home.
-                    </h2>
-                    <p className="mt-2 text-xs text-white/75">A sample project experience</p>
-                  </div>
-                  <div className="absolute bottom-7 right-5 hidden items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-2 text-[11px] text-white backdrop-blur-md sm:flex">
-                    <Play size={12} fill="currentColor" /> Explore project
-                  </div>
+                  <div className="home-hero-overlay absolute inset-0 bg-gradient-to-t from-[#07172d]/90 via-[#07172d]/15 to-[#07172d]/5" />
                 </div>
 
                 <div className="grid gap-2.5 p-1.5 sm:grid-cols-[1.12fr_0.88fr] sm:p-2">
@@ -464,11 +660,11 @@ function Home() {
           </div>
         </section>
 
-        <section id="solutions" className="home-section border-y border-[#e2e7ef] bg-white">
-          <div className="home-container grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
-            <div>
+        <section id="solutions" className="home-section">
+          <div className="home-container home-solutions-container">
+            <div className="home-solutions-intro">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#1268e8]">
-                The opportunity
+                About MAVROS RealtyAI
               </p>
               <h2 className="mt-5 max-w-xl font-display text-4xl leading-[1.08] tracking-[-0.04em] text-[#102039] sm:text-5xl">
                 Property marketing should do more than generate enquiries.
@@ -479,73 +675,73 @@ function Home() {
               </p>
               <a
                 href="#how-it-works"
-                className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-[#1268e8] hover:text-[#0d58cb]"
+                className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-[#55ddf2] hover:text-white"
               >
                 See how the workflow connects <ArrowRight size={15} />
               </a>
             </div>
-            <div className="divide-y divide-[#e8edf3] border-y border-[#e8edf3]">
-              {[
-                {
-                  n: "01",
-                  title: "Missed enquiries",
-                  desc: "Buyers have questions at different times. A delayed answer can make it harder to keep their interest.",
-                },
-                {
-                  n: "02",
-                  title: "Disconnected workflows",
-                  desc: "Campaign context, project details and sales conversations often live in separate places.",
-                },
-                {
-                  n: "03",
-                  title: "Inconsistent follow-up",
-                  desc: "Without useful context, promising enquiries are harder to prioritize and hand over.",
-                },
-              ].map((item) => (
-                <article
-                  key={item.n}
-                  className="grid gap-3 py-6 sm:grid-cols-[72px_0.7fr_1fr] sm:items-start sm:gap-6 sm:py-7"
-                >
-                  <span className="font-display text-lg text-[#92a2b7]">{item.n}</span>
-                  <h3 className="text-lg font-semibold tracking-tight text-[#172941]">
-                    {item.title}
-                  </h3>
-                  <p className="max-w-md text-sm leading-6 text-[#68778d]">{item.desc}</p>
-                </article>
-              ))}
+            <div className="home-solutions-carousel">
+              <CircularCarousel
+                items={solutionPanels}
+                preset="orbit"
+                intro="spin"
+                cardWidth={520}
+                aspectRatio={1.1}
+                gap={32}
+                tilt={-5}
+                autoplay="off"
+                draggable
+                momentum={0.72}
+                snap
+                focusOnClick
+                fadeColor="#080909"
+                innerShade={0.45}
+                cornerRadius={12}
+                captions
+                style={{ height: "100%", "--cc-accent": "#39D5E5" }}
+              />
             </div>
           </div>
         </section>
 
-        <section id="how-it-works" className="home-section bg-[#102039] text-white">
+        <section id="how-it-works" className="home-section home-journey-section">
           <div className="home-container">
-            <div className="grid gap-6 lg:grid-cols-[0.75fr_1fr] lg:items-end">
+            <div className="home-journey-intro">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#8ab8ff]">
-                  One connected journey
-                </p>
-                <h2 className="mt-5 max-w-xl font-display text-4xl leading-[1.08] tracking-[-0.04em] sm:text-5xl">
+                <p className="home-journey-kicker">One connected journey</p>
+                <h2 className="home-journey-heading">
                   From first impression to the next conversation.
                 </h2>
               </div>
-              <p className="max-w-lg text-sm leading-7 text-white/65 lg:justify-self-end">
+              <p className="home-journey-summary">
                 A straightforward way to understand where RealtyAI fits—from the campaign that
                 starts interest to the human follow-up that moves it forward.
               </p>
             </div>
-            <div className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3">
+            <div
+              className="home-journey-track"
+              role="list"
+              aria-label="The six stages of the RealtyAI journey"
+            >
               {steps.map((step) => {
                 const Icon = step.icon;
                 return (
-                  <article key={step.number} className="bg-[#102039] p-6 sm:p-7 lg:p-8">
-                    <div className="flex items-center justify-between">
-                      <Icon size={19} strokeWidth={1.7} className="text-[#87b6ff]" />
-                      <span className="font-display text-sm text-white/40">{step.number}</span>
+                  <article
+                    key={step.number}
+                    className="home-journey-step"
+                    role="listitem"
+                    tabIndex={0}
+                    aria-labelledby={`journey-stage-${step.number}`}
+                  >
+                    <div className="home-journey-marker" aria-hidden="true">
+                      <Icon size={19} strokeWidth={1.7} />
                     </div>
-                    <h3 className="mt-8 font-display text-2xl">{step.title}</h3>
-                    <p className="mt-2 max-w-xs text-sm leading-6 text-white/60">
-                      {step.description}
-                    </p>
+                    <div className="home-journey-meta">
+                      <span>Stage</span>
+                      <span>{step.number}</span>
+                    </div>
+                    <h3 id={`journey-stage-${step.number}`}>{step.title}</h3>
+                    <p>{step.description}</p>
                   </article>
                 );
               })}
@@ -567,125 +763,28 @@ function Home() {
                 is a prototype; production connections and operational features are not implied.
               </p>
             </div>
-            <div className="mt-12 grid gap-4 lg:grid-cols-12">
-              <article className="overflow-hidden rounded-[26px] border border-[#e1e7ef] bg-white lg:col-span-7">
-                <div className="grid min-h-[330px] sm:grid-cols-[1fr_0.88fr]">
-                  <div className="flex flex-col justify-between p-7 sm:p-9">
-                    <div>
-                      <span className="flex size-11 items-center justify-center rounded-2xl bg-[#eaf1ff] text-[#1268e8]">
-                        <Bot size={21} />
-                      </span>
-                      <p className="mt-7 text-[10px] font-bold uppercase tracking-[0.17em] text-[#8190a4]">
-                        Buyer experience
-                      </p>
-                      <h3 className="mt-2 font-display text-3xl tracking-tight">
-                        AI Property Advisor
-                      </h3>
-                      <p className="mt-3 max-w-sm text-sm leading-6 text-[#68778d]">
-                        Help buyers explore project information through an approachable,
-                        project-aware conversation concept.
-                      </p>
-                    </div>
-                    <p className="mt-8 text-[11px] font-medium text-[#1268e8]">
-                      Designed for reviewed project facts
-                    </p>
-                  </div>
-                  <div className="relative min-h-[250px] overflow-hidden sm:min-h-full">
-                    <img
-                      src={interior}
-                      alt="Interior of an illustrative residential home"
-                      width={1024}
-                      height={768}
-                      loading="lazy"
-                      className="absolute inset-0 size-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#102039]/65 via-transparent to-transparent" />
-                    <div className="absolute bottom-4 left-4 right-4 rounded-2xl border border-white/50 bg-white/90 p-4 shadow-xl backdrop-blur">
-                      <p className="text-[9px] font-semibold uppercase tracking-[0.15em] text-[#8693a5]">
-                        Sample buyer question
-                      </p>
-                      <p className="mt-1.5 text-xs font-medium leading-5 text-[#26364c]">
-                        “What should I know before I visit?”
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </article>
-              <article className="rounded-[26px] bg-[#eaf1fb] p-7 sm:p-9 lg:col-span-5">
-                <span className="flex size-11 items-center justify-center rounded-2xl bg-white text-[#1268e8]">
-                  <Building2 size={21} />
-                </span>
-                <p className="mt-7 text-[10px] font-bold uppercase tracking-[0.17em] text-[#8190a4]">
-                  Discover
-                </p>
-                <h3 className="mt-2 font-display text-3xl tracking-tight">Property matching</h3>
-                <p className="mt-3 max-w-sm text-sm leading-6 text-[#68778d]">
-                  Help buyers compare layouts and project details relevant to their needs—based on
-                  information the developer supplies.
-                </p>
-                <div className="mt-8 flex items-center gap-3 rounded-2xl border border-white bg-white/80 p-4">
-                  <span className="flex size-9 items-center justify-center rounded-xl bg-[#edf3ff] text-[#1268e8]">
-                    <Layers3 size={17} />
-                  </span>
-                  <div>
-                    <p className="text-xs font-semibold">Sample project details</p>
-                    <p className="mt-1 text-[10px] text-[#8390a2]">
-                      Configurations · amenities · FAQs
-                    </p>
-                  </div>
-                  <ArrowUpRight size={15} className="ml-auto text-[#9ba9bb]" />
-                </div>
-              </article>
-              {[
-                {
-                  title: "Lead qualification",
-                  description:
-                    "Organize requirements and enquiry context for a more informed sales handoff.",
-                  icon: Workflow,
-                },
-                {
-                  title: "Site-visit coordination",
-                  description: "Give buyers a clear way to express interest in a project visit.",
-                  icon: CalendarDays,
-                },
-                {
-                  title: "Campaign attribution",
-                  description:
-                    "Understand which campaign or source introduced a buyer to the project.",
-                  icon: MousePointerClick,
-                },
-                {
-                  title: "Sales analytics",
-                  description:
-                    "Review the enquiry journey and identify where teams may need more context.",
-                  icon: BarChart3,
-                },
-              ].map((feature) => {
-                const Icon = feature.icon;
-                return (
-                  <article
-                    key={feature.title}
-                    className="rounded-[22px] border border-[#e1e7ef] bg-white p-6 sm:p-7 lg:col-span-3"
-                  >
-                    <Icon size={19} className="text-[#1268e8]" strokeWidth={1.7} />
-                    <h3 className="mt-6 text-base font-semibold tracking-tight">{feature.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-[#6a798f]">{feature.description}</p>
-                    <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.13em] text-[#95a2b4]">
-                      Product direction
-                    </p>
-                  </article>
-                );
-              })}
+            <div className="mt-12">
+              <AccordionGallery
+                items={platformGalleryItems}
+                defaultIndex={-1}
+                accentColor="#39d5e5"
+                overlayColor="#080909"
+                textColor="#f4f0e8"
+                height={420}
+                gap={10}
+                radius={12}
+                expandRatio={0.42}
+              />
             </div>
           </div>
         </section>
 
-        <section id="veytrix" className="home-section bg-[#eaf0f8]">
+        <section id="veytrix" className="home-section">
           <div className="home-container grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-16">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#d1dceb] bg-white/80 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#4f6381]">
-                <Sparkles size={13} className="text-[#1268e8]" />A complementary product
-              </div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#4f6381]">
+                A complementary product
+              </p>
               <h2 className="mt-6 max-w-xl font-display text-4xl leading-[1.08] tracking-[-0.04em] text-[#102039] sm:text-5xl">
                 Create property campaigns that make people stop scrolling.
               </h2>
@@ -710,94 +809,50 @@ function Home() {
               <p className="mt-7 text-[11px] leading-5 text-[#7a899d]">
                 Creative editor shown is a visual concept, not a connected rendering tool.
               </p>
+              <a href="#veytrix-studio-preview" className="home-editorial-link mt-6">
+                Explore Veytrix.AI <ArrowUpRight size={15} />
+              </a>
             </div>
 
-            <div className="overflow-hidden rounded-[26px] border border-white bg-white p-3 shadow-[0_24px_70px_rgba(23,45,77,0.12)] sm:p-4">
-              <div className="flex items-center justify-between border-b border-[#edf0f5] px-2 pb-4">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex size-9 items-center justify-center rounded-xl bg-[#102039] text-white">
-                    <Film size={17} />
+            <figure id="veytrix-studio-preview" className="home-studio-showcase">
+              <div className="home-studio-frame">
+                <img
+                  src={residenceBedroom}
+                  alt="Sunlit contemporary bedroom used as a sample property campaign visual"
+                  width={1024}
+                  height={768}
+                  loading="lazy"
+                />
+                <div className="home-studio-shade" />
+                <div className="home-studio-topline">
+                  <span>
+                    <Film size={15} /> Veytrix.AI Studio
                   </span>
-                  <div>
-                    <p className="text-xs font-semibold">Veytrix.AI Studio</p>
-                    <p className="mt-0.5 text-[10px] text-[#8995a6]">
-                      Creative preview · sample project
-                    </p>
-                  </div>
+                  <span>Creative concept</span>
                 </div>
-                <span className="rounded-full bg-[#f0f4fa] px-2.5 py-1.5 text-[9px] font-semibold text-[#63738b]">
-                  CONCEPT
-                </span>
+                <div className="home-studio-title">
+                  <span>Campaign study · 01</span>
+                  <p>
+                    A quieter kind
+                    <br />
+                    of arrival.
+                  </p>
+                </div>
+                <span className="home-studio-format">Property campaign / vertical edit</span>
               </div>
-              <div className="grid gap-3 pt-3 sm:grid-cols-[1fr_150px]">
-                <div className="relative min-h-[260px] overflow-hidden rounded-[18px] bg-[#152840] sm:min-h-[310px]">
-                  <img
-                    src={amenityPool}
-                    alt="Sample poolside property visual in a creative preview"
-                    width={1024}
-                    height={1024}
-                    loading="lazy"
-                    className="absolute inset-0 size-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#102039]/80 via-transparent to-[#102039]/10" />
-                  <div className="absolute left-4 top-4 rounded-lg border border-white/25 bg-[#102039]/45 px-2.5 py-1.5 text-[9px] font-medium text-white backdrop-blur">
-                    9:16 · Vertical preview
-                  </div>
-                  <span className="absolute left-5 top-1/2 flex size-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/60 bg-white/20 text-white backdrop-blur">
-                    <Play size={17} fill="currentColor" />
-                  </span>
-                  <div className="absolute inset-x-4 bottom-4">
-                    <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-white/75">
-                      Project launch · sample
-                    </p>
-                    <p className="mt-1 font-display text-xl text-white">A new view of home.</p>
-                  </div>
+              <figcaption className="home-studio-storyboard">
+                <span className="home-studio-story-label">Visual sequence · sample</span>
+                <div>
+                  <img src={amenityClubhouse} alt="" width={320} height={220} loading="lazy" />
+                  <img src={interior} alt="" width={320} height={220} loading="lazy" />
+                  <img src={amenityJogging} alt="" width={320} height={220} loading="lazy" />
                 </div>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-1">
-                  <div className="rounded-[16px] bg-[#f4f6fa] p-3">
-                    <div className="flex items-center gap-2 text-[#63738b]">
-                      <Video size={14} />
-                      <span className="text-[9px] font-semibold uppercase tracking-wide">
-                        Format
-                      </span>
-                    </div>
-                    <p className="mt-3 text-xs font-semibold">Vertical reel</p>
-                    <p className="mt-1 text-[9px] text-[#8a96a7]">Social preview</p>
-                  </div>
-                  <div className="rounded-[16px] bg-[#f4f6fa] p-3">
-                    <div className="flex items-center gap-2 text-[#63738b]">
-                      <Layers3 size={14} />
-                      <span className="text-[9px] font-semibold uppercase tracking-wide">
-                        Brand kit
-                      </span>
-                    </div>
-                    <p className="mt-3 text-xs font-semibold">Project palette</p>
-                    <div className="mt-2 flex gap-1.5">
-                      <span className="size-3 rounded-full bg-[#102039]" />
-                      <span className="size-3 rounded-full bg-[#1268e8]" />
-                      <span className="size-3 rounded-full bg-[#dfc99d]" />
-                    </div>
-                  </div>
-                  <div className="col-span-2 rounded-[16px] border border-[#e7ebf1] p-3 sm:col-span-1">
-                    <p className="text-[9px] font-semibold uppercase tracking-wide text-[#74839a]">
-                      Storyboard
-                    </p>
-                    <div className="mt-3 flex items-center gap-1.5">
-                      <span className="h-8 flex-1 rounded-md bg-[#c8d7e8]" />
-                      <span className="h-8 flex-1 rounded-md bg-[#e6d6b7]" />
-                      <span className="h-8 flex-1 rounded-md bg-[#b7c8c1]" />
-                    </div>
-                    <p className="mt-2 text-[9px] text-[#8a96a7]">
-                      Visual sequence · captions · review
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+              </figcaption>
+            </figure>
           </div>
         </section>
 
-        <section className="home-section">
+        <section id="advisor-demo" className="home-section">
           <div className="home-container grid gap-8 lg:grid-cols-[0.7fr_1.3fr] lg:items-center lg:gap-20">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#1268e8]">
@@ -810,7 +865,7 @@ function Home() {
                 Try a lightweight, predefined conversation to see how a buyer-facing advisor might
                 keep the discussion moving.
               </p>
-              <div className="mt-6 rounded-2xl border border-[#dce5f1] bg-white p-4">
+              <div className="home-advisor-disclaimer mt-6 rounded-2xl border border-[#dce5f1] bg-white p-4">
                 <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#65758c]">
                   Sample demonstration data
                 </p>
@@ -821,7 +876,7 @@ function Home() {
               </div>
             </div>
 
-            <div className="overflow-hidden rounded-[24px] border border-[#dfe6ef] bg-white shadow-[0_20px_60px_rgba(25,48,80,0.09)]">
+            <div className="home-advisor-shell overflow-hidden rounded-[24px] border border-[#dfe6ef] bg-white shadow-[0_20px_60px_rgba(25,48,80,0.09)]">
               <div className="flex items-center justify-between border-b border-[#e9edf3] px-5 py-4 sm:px-6">
                 <div className="flex items-center gap-3">
                   <span className="flex size-10 items-center justify-center rounded-2xl bg-[#eaf1ff] text-[#1268e8]">
@@ -839,12 +894,12 @@ function Home() {
               <div
                 aria-label="Sample conversation"
                 aria-live="polite"
-                className="flex max-h-[310px] min-h-[260px] flex-col gap-3 overflow-y-auto bg-[#f8faff] p-4 sm:p-6"
+                className="home-advisor-chat flex max-h-[310px] min-h-[260px] flex-col gap-3 overflow-y-auto bg-[#f8faff] p-4 sm:p-6"
               >
                 {messages.map((message, index) => (
                   <div
                     key={`${index}-${message.role}`}
-                    className={`max-w-[88%] break-words rounded-2xl px-4 py-3 text-xs leading-5 ${
+                    className={`home-advisor-message max-w-[88%] break-words rounded-2xl px-4 py-3 text-xs leading-5 ${
                       message.role === "buyer"
                         ? "ml-auto rounded-br-sm bg-[#1268e8] text-white"
                         : "rounded-bl-sm border border-[#e7ebf2] bg-white text-[#4d5d74]"
@@ -854,7 +909,7 @@ function Home() {
                   </div>
                 ))}
                 {messages.length === 2 && (
-                  <article className="max-w-[88%] rounded-2xl rounded-bl-sm border border-[#e1e7ef] bg-white p-4">
+                  <article className="home-advisor-property-card max-w-[88%] rounded-2xl rounded-bl-sm border border-[#e1e7ef] bg-white p-4">
                     <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#8190a4]">
                       Sample property match · illustrative data
                     </p>
@@ -887,7 +942,7 @@ function Home() {
                       key={question}
                       type="button"
                       onClick={() => sendQuestion(question)}
-                      className="rounded-full border border-[#dfe6ef] bg-white px-3 py-2 text-left text-[10px] leading-4 text-[#53637a] transition hover:border-[#a9c5ef] hover:text-[#1268e8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1268e8]"
+                      className="home-advisor-question rounded-full border border-[#dfe6ef] bg-white px-3 py-2 text-left text-[10px] leading-4 text-[#53637a] transition hover:border-[#a9c5ef] hover:text-[#1268e8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1268e8]"
                     >
                       {question}
                     </button>
@@ -908,7 +963,7 @@ function Home() {
                   <button
                     type="submit"
                     aria-label="Send sample question"
-                    className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#1268e8] text-white transition hover:bg-[#0d58cb] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1268e8]"
+                    className="home-advisor-send flex size-11 shrink-0 items-center justify-center rounded-full bg-[#1268e8] text-white transition hover:bg-[#0d58cb] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1268e8]"
                   >
                     <Send size={16} />
                   </button>
@@ -924,11 +979,11 @@ function Home() {
           </div>
         </section>
 
-        <section className="home-section bg-white">
+        <section id="trust" className="home-section">
           <div className="home-container">
             <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start lg:gap-20">
               <div>
-                <span className="flex size-12 items-center justify-center rounded-2xl bg-[#eaf1ff] text-[#1268e8]">
+                <span className="home-trust-emblem flex size-12 items-center justify-center rounded-2xl bg-[#eaf1ff] text-[#1268e8]">
                   <ShieldCheck size={22} />
                 </span>
                 <p className="mt-7 text-xs font-bold uppercase tracking-[0.2em] text-[#1268e8]">
@@ -942,33 +997,19 @@ function Home() {
                   production controls or certifications.
                 </p>
               </div>
-              <div className="grid gap-x-8 gap-y-7 sm:grid-cols-2">
-                {[
-                  [
-                    "Approved answers",
-                    "Ground buyer-facing answers in project facts reviewed by the developer.",
-                  ],
-                  [
-                    "Human handoff",
-                    "Make it easier to involve a person when a detail is uncertain.",
-                  ],
-                  [
-                    "Privacy-conscious capture",
-                    "Collect only what a real enquiry workflow needs, with clear expectations.",
-                  ],
-                  [
-                    "Controlled access",
-                    "Design boundaries around access to each developer's information.",
-                  ],
-                  ["Creative review", "Preview and approve marketing assets before they are used."],
-                  [
-                    "Thoughtful integrations",
-                    "Connect only the channels and systems agreed for a project.",
-                  ],
-                ].map(([title, description]) => (
-                  <article key={title} className="border-t border-[#e5eaf1] pt-4">
-                    <h3 className="text-sm font-semibold text-[#1a2b43]">{title}</h3>
-                    <p className="mt-2 text-xs leading-5 text-[#718097]">{description}</p>
+              <div className="home-trust-principles">
+                {trustPrinciples.map(({ title, description, icon: Icon }, index) => (
+                  <article key={title} className="home-trust-principle">
+                    <span className="home-trust-principle-icon">
+                      <Icon size={16} strokeWidth={1.6} />
+                    </span>
+                    <span className="home-trust-principle-copy">
+                      <span className="home-trust-principle-number">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <h3>{title}</h3>
+                      <p>{description}</p>
+                    </span>
                   </article>
                 ))}
               </div>
@@ -976,9 +1017,9 @@ function Home() {
           </div>
         </section>
 
-        <section className="home-section">
-          <div className="home-container grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
-            <div>
+        <section id="integrations" className="home-section">
+          <div className="home-container home-integration-layout">
+            <div className="home-integration-intro">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#1268e8]">
                 Flexible by design
               </p>
@@ -990,28 +1031,61 @@ function Home() {
                 imply live connections or partnerships.
               </p>
             </div>
-            <div className="flex flex-wrap gap-2.5">
-              {integrationOptions.map(({ label, icon: Icon }) => {
-                return (
-                  <span
-                    key={label}
-                    className="inline-flex items-center gap-2.5 rounded-full border border-[#dfe5ee] bg-white px-4 py-3 text-xs font-medium text-[#4e5f77]"
-                  >
-                    <Icon size={15} className="text-[#1268e8]" />
-                    {label}
-                    <span className="rounded-full bg-[#f0f3f8] px-2 py-1 text-[8px] font-semibold uppercase tracking-wide text-[#78869a]">
-                      Option
-                    </span>
-                  </span>
-                );
-              })}
+            <div className="home-integration-folders">
+              {[
+                {
+                  label: "Buyer Conversations",
+                  items: integrationOptions.slice(0, 3),
+                },
+                {
+                  label: "Team Systems & Creative",
+                  items: integrationOptions.slice(3),
+                },
+              ].map((group) => (
+                <div className="home-integration-folder" key={group.label}>
+                  <FolderFloat
+                    items={group.items.map(({ label, icon }) => ({
+                      label,
+                      value: label,
+                      icon,
+                    }))}
+                    label={group.label}
+                    sublabel={`${group.items.length} optional integrations`}
+                    trigger="hover"
+                    closeOnSelect
+                    physics
+                    drift={0.28}
+                    folderColor="#15191B"
+                    frontColor="#25373A"
+                    paperColor="#F4F0E8"
+                    itemColor="#F4F0E8"
+                    itemTextColor="#080909"
+                    labelColor="#F4F0E8"
+                    width={compactIntegrations ? 224 : 248}
+                    height={compactIntegrations ? 150 : 166}
+                    radius={16}
+                    spread={compactIntegrations ? 90 : 168}
+                    lift={26}
+                    tilt={5}
+                    flapAngle={34}
+                    restAngle={12}
+                    openDuration={520}
+                    stagger={48}
+                    bounce={0.24}
+                    className="home-integration-folder-float"
+                  />
+                </div>
+              ))}
             </div>
+            <p className="home-integration-disclaimer">
+              Optional integration concepts to explore; none are represented as connected.
+            </p>
           </div>
         </section>
 
         <section id="pilot" className="home-section bg-[#102039] text-white">
           <div className="home-container grid gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:gap-20">
-            <div>
+            <div className="home-pilot-copy">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#8ab8ff]">
                 Pilot conversation
               </p>
@@ -1041,7 +1115,7 @@ function Home() {
               </p>
             </div>
 
-            <div className="rounded-[24px] bg-white p-5 text-[#15253d] shadow-[0_24px_70px_rgba(0,0,0,0.18)] sm:p-8">
+            <div className="home-pilot-card rounded-[24px] bg-white p-5 text-[#15253d] shadow-[0_24px_70px_rgba(0,0,0,0.18)] sm:p-8">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h3 className="font-display text-2xl">Discuss a pilot</h3>
@@ -1203,8 +1277,17 @@ function Home() {
           </div>
         </section>
 
-        <section className="home-section home-section-cta">
+        <section id="home-cta" className="home-section home-section-cta">
           <div className="home-container relative overflow-hidden rounded-[30px] bg-[#dce9fa] px-6 py-12 sm:px-12 sm:py-14 lg:px-16">
+            <img
+              className="home-cta-image"
+              src={residenceBalcony}
+              alt=""
+              width={1600}
+              height={900}
+              loading="lazy"
+              aria-hidden="true"
+            />
             <div className="pointer-events-none absolute -right-10 -top-28 size-96 rounded-full border border-white/50" />
             <div className="pointer-events-none absolute -right-4 -top-20 size-80 rounded-full border border-white/50" />
             <div className="relative flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
@@ -1213,7 +1296,7 @@ function Home() {
                   Mavros RealtyAI × Veytrix.AI
                 </p>
                 <h2 className="mt-4 font-display text-4xl leading-[1.08] tracking-[-0.04em] text-[#102039] sm:text-5xl">
-                  Connect property marketing with your sales workflow.
+                  Connect Property Marketing With Your Sales Workflow.
                 </h2>
                 <p className="mt-4 max-w-xl text-sm leading-6 text-[#536883]">
                   See how creative campaigns and buyer conversations could work together for your
@@ -1231,42 +1314,47 @@ function Home() {
         </section>
       </main>
 
-      <footer className="border-t border-[#dfe5ed] bg-white">
-        <div className="home-container grid gap-8 py-10 md:grid-cols-[1fr_auto] md:items-end">
-          <div>
+      <footer className="home-footer">
+        <div className="home-container home-footer-grid">
+          <div className="home-footer-brand">
             <a href="#top" className="inline-flex items-center gap-3" aria-label="Mavros home">
-              <span className="flex size-9 items-center justify-center rounded-xl bg-[#102039] text-white">
+              <span className="home-footer-mark">
                 <Building2 size={18} />
               </span>
               <span>
-                <span className="block text-xs font-bold tracking-[0.18em]">MAVROS</span>
-                <span className="mt-1 block text-[9px] font-medium tracking-[0.12em] text-[#75839a]">
+                <span className="block text-xs font-bold tracking-[0.2em]">MAVROS</span>
+                <span className="mt-1 block text-[9px] font-medium tracking-[0.18em] text-white/55">
                   REALTYAI
                 </span>
               </span>
             </a>
-            <p className="mt-4 max-w-md text-xs leading-5 text-[#7a8799]">
+            <p className="mt-5 max-w-sm text-xs leading-6 text-white/55">
               A connected product vision for property marketing, buyer conversations and sales
               workflows. Veytrix.AI is a complementary creative-studio concept.
             </p>
           </div>
-          <nav aria-label="Footer navigation" className="flex flex-wrap gap-x-5 gap-y-3 text-xs">
-            {navLinks.slice(0, 5).map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="font-medium text-[#5e6d82] hover:text-[#1268e8]"
-              >
-                {link.label}
-              </a>
-            ))}
+          <nav aria-label="Quick links">
+            <h2>Quick links</h2>
+            <a href="#solutions">About MAVROS</a>
+            <a href="#platform">Platform</a>
+            <a href="#pilot">Pilot conversation</a>
+          </nav>
+          <nav aria-label="Platform navigation">
+            <h2>Explore</h2>
+            <a href="#how-it-works">How it works</a>
+            <a href="#advisor-demo">Property Advisor demo</a>
+            <a href="#integrations">Integration options</a>
+            <a href="#faq">FAQs</a>
+          </nav>
+          <nav aria-label="Related product">
+            <h2>Related product</h2>
+            <a href="#veytrix">Veytrix.AI Studio</a>
+            <a href="#home-cta">Book a demo</a>
           </nav>
         </div>
-        <div className="border-t border-[#edf0f4]">
-          <div className="home-container flex flex-col gap-2 py-4 text-[10px] text-[#8995a6] sm:flex-row sm:items-center sm:justify-between">
-            <p>© {new Date().getFullYear()} Mavros Tech. All rights reserved.</p>
-            <p>Product concepts and sample content shown for demonstration purposes.</p>
-          </div>
+        <div className="home-container home-footer-bottom">
+          <p>© {new Date().getFullYear()} Mavros Tech. All rights reserved.</p>
+          <p>Product concepts and sample content shown for demonstration purposes.</p>
         </div>
       </footer>
     </div>

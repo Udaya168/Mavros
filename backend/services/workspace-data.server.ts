@@ -129,7 +129,7 @@ export async function listVisitsServer(organizationId: string) {
   const { data, error } = await supabase
     .from("developer_site_visits")
     .select(
-      "id, project_id, lead_id, assigned_to, scheduled_at, duration_minutes, status, notes, created_at, project:developer_projects!developer_site_visits_project_fk(name)",
+      "id, project_id, lead_id, assigned_to, scheduled_at, duration_minutes, status, notes, created_at, project:developer_projects!developer_site_visits_project_fk(name), lead:developer_leads!developer_site_visits_lead_fk(full_name)",
     )
     .eq("organization_id", organizationId)
     .order("scheduled_at", { ascending: true })
