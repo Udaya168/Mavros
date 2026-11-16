@@ -36,6 +36,7 @@ import { signOutPublicUser } from "@/lib/public-auth";
 import { listDeveloperProjects } from "../developer-data";
 import { listDeveloperLeads } from "../leads-data";
 import { listDeveloperNotifications } from "../workspace-data";
+import { GradientASCII } from "../components/GradientASCII";
 import "./developer-portal.css";
 
 const navigationGroups = [
@@ -252,6 +253,7 @@ export function DeveloperLayout() {
       </aside>
 
       <div className="developer-workspace">
+        <GradientASCII />
         <header className="developer-topbar">
           <div className="developer-topbar-title">
             <button

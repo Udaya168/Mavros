@@ -33,6 +33,7 @@ import {
 import { canAccessDeveloperPath } from "@/lib/developer-auth-core";
 import residenceBalcony from "@/assets/residence-balcony.jpg";
 
+import { HeroBanner } from "../components/hero-banner";
 import {
   getDeveloperDashboard,
   getDeveloperReports,
@@ -40,6 +41,7 @@ import {
   listDeveloperProjects,
 } from "../developer-data";
 import { listDeveloperTasks, listDeveloperVisits } from "../workspace-data";
+import { listDeveloperLeads } from "../leads-data";
 
 const inventoryColors: Record<string, string> = {
   available: "#39d5e5",
@@ -59,6 +61,25 @@ const leadLabels: Record<string, string> = {
   lost: "Lost",
 };
 
+const sourceLabelMap: Record<string, string> = {
+  website: "Website",
+  web: "Website",
+  referral: "Referral",
+  referrals: "Referral",
+  campaign: "Campaign",
+  campaigns: "Campaign",
+  google: "Website",
+  facebook: "Website",
+  instagram: "Website",
+  linkedin: "Website",
+  whatsapp: "Referral",
+  email: "Campaign",
+  sms: "Campaign",
+  walkin: "Other",
+  walk_in: "Other",
+  other: "Other",
+};
+
 function formatNumber(value: number) {
   return new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 }).format(value);
 }
@@ -75,6 +96,34 @@ function formatDate(value: string | null | undefined, options?: Intl.DateTimeFor
 
 function statusLabel(status: string) {
   return status.replaceAll("_", " ");
+}
+
+function getPriorityLabel(task: { due_at: string | null; status: string }) {
+  if (task.status === "done") return "Completed";
+  if (!task.due_at) return "Upcoming";
+  const due = new Date(task.due_at).getTime();
+  const now = Date.now();
+  const daysDiff = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+  if (daysDiff < 0) return "Overdue";
+  if (daysDiff <= 3) return "Due soon";
+  return "Upcoming";
+}
+
+function aggregateLeadSources(leads: Array<{ source: string }>) {
+  const buckets: Record<string, number> = {
+    Website: 0,
+    Referral: 0,
+    Campaign: 0,
+    Other: 0,
+  };
+  for (const lead of leads) {
+    const normalized = lead.source.toLowerCase().trim();
+    const mapped = sourceLabelMap[normalized] ?? "Other";
+    buckets[mapped] = (buckets[mapped] ?? 0) + 1;
+  }
+  return Object.entries(buckets)
+    .filter(([, count]) => count > 0)
+    .map(([name, value]) => ({ name, value }));
 }
 
 export function OverviewPage() {
@@ -119,6 +168,22 @@ export function OverviewPage() {
     queryFn: () => listDeveloperOrganizationActivity({ data: { organizationId } }),
     enabled: Boolean(organizationId),
   });
+  const leadsQuery = useQuery({
+    queryKey: ["developer-leads-sources", organizationId],
+    queryFn: () =>
+      listDeveloperLeads({
+        data: {
+          organizationId,
+          search: "",
+          projectId: null,
+          status: null,
+          source: null,
+          assignedTo: null,
+          page: 0,
+        },
+      }),
+    enabled: Boolean(organizationId && canViewLeads),
+  });
 
   const projectById = useMemo(
     () => new Map((projectsQuery.data?.projects ?? []).map((project) => [project.id, project])),
@@ -156,12 +221,7 @@ export function OverviewPage() {
         color: inventoryColors[status] ?? "#657579",
       }))
     : [];
-  const leadActivityData = reportsQuery.data
-    ? Object.entries(reportsQuery.data.leads.byStatus).map(([status, count]) => ({
-        name: leadLabels[status] ?? statusLabel(status),
-        value: count,
-      }))
-    : [];
+  const leadSourcesData = leadsQuery.data ? aggregateLeadSources(leadsQuery.data.leads) : [];
   const openTasks = tasksQuery.data?.filter(
     (task) => task.status === "open" || task.status === "in_progress",
   );
@@ -216,29 +276,7 @@ export function OverviewPage() {
 
   return (
     <div className="developer-command-center">
-      <header className="command-page-heading">
-        <div>
-          <p className="command-eyebrow">
-            <span /> ORGANIZATION OVERVIEW
-          </p>
-          <h1>Command Center</h1>
-          <p>
-            Good{" "}
-            {new Date().getHours() < 12
-              ? "morning"
-              : new Date().getHours() < 17
-                ? "afternoon"
-                : "evening"}
-            , {developerSession.user.displayName.split(" ")[0] || "there"}. Here’s your workspace at
-            a glance.
-          </p>
-        </div>
-        <Link to="/app/projects" className="command-heading-action">
-          <Building2 size={16} aria-hidden="true" />
-          Manage projects
-          <ArrowUpRight size={15} aria-hidden="true" />
-        </Link>
-      </header>
+      <HeroBanner />
 
       <DashboardDataError
         isError={dashboardQuery.isError}
@@ -260,19 +298,6 @@ export function OverviewPage() {
           href="/app/projects"
         />
         <KpiCard
-          label="Total Inventory"
-          value={dashboardQuery.isPending ? null : dashboardQuery.data?.units}
-          detail={
-            dashboardQuery.data
-              ? `${formatNumber(dashboardQuery.data.availableUnits)} available`
-              : "Recorded units"
-          }
-          icon={<PackageOpen size={18} />}
-          color="teal"
-          href="/app/$module"
-          module="inventory"
-        />
-        <KpiCard
           label="Active Leads"
           value={reportsQuery.isPending ? null : reportsQuery.isError ? undefined : activeLeads}
           detail={
@@ -286,7 +311,20 @@ export function OverviewPage() {
           disabled={!canViewLeads}
         />
         <KpiCard
-          label="Upcoming Site Visits"
+          label="Inventory Units"
+          value={dashboardQuery.isPending ? null : dashboardQuery.data?.units}
+          detail={
+            dashboardQuery.data
+              ? `${formatNumber(dashboardQuery.data.availableUnits)} available`
+              : "Recorded units"
+          }
+          icon={<PackageOpen size={18} />}
+          color="teal"
+          href="/app/$module"
+          module="inventory"
+        />
+        <KpiCard
+          label="Upcoming Visits"
           value={
             canViewVisits
               ? visitsQuery.isPending
@@ -307,16 +345,6 @@ export function OverviewPage() {
           module="visits"
           disabled={!canViewVisits}
         />
-        <KpiCard
-          label="Total Revenue"
-          value={undefined}
-          detail="Revenue tracking is not connected"
-          icon={<BarChart3 size={18} />}
-          color="amber"
-          href="/app/$module"
-          module="billing"
-          disabled={!canAccessDeveloperPath(roles, "/app/billing")}
-        />
       </section>
 
       <section className="command-section" aria-labelledby="command-analytics-heading">
@@ -325,136 +353,41 @@ export function OverviewPage() {
           title="Portfolio analytics"
           detail="Current organization records"
         />
-        {reportsQuery.isPending ? (
-          <ChartSkeletons />
-        ) : reportsQuery.isError ? (
+        {reportsQuery.isPending || leadsQuery.isPending ? (
+          <ChartSkeletons count={2} />
+        ) : reportsQuery.isError || leadsQuery.isError ? (
           <InlineQueryError
             message="Analytics data could not be loaded."
-            onRetry={() => void reportsQuery.refetch()}
+            onRetry={() => {
+              void reportsQuery.refetch();
+              void leadsQuery.refetch();
+            }}
           />
         ) : (
-          <div className="command-chart-grid">
+          <div className="command-chart-grid-two">
             <Panel
-              title="Project Performance"
+              title="Project Status"
               subtitle="Projects by current status"
               icon={<Building2 size={16} />}
             >
               <StatusBarChart data={projectStatusData} />
             </Panel>
             <Panel
-              title="Inventory Distribution"
-              subtitle="Recorded units by status"
-              icon={<PackageOpen size={16} />}
+              title="Lead Sources"
+              subtitle="Leads grouped by source"
+              icon={<Users size={16} />}
             >
-              <InventoryDonut data={inventoryData} total={reportsQuery.data.inventory.total} />
-            </Panel>
-            <Panel
-              title="Lead Activity"
-              subtitle="Current pipeline by stage"
-              icon={<Activity size={16} />}
-            >
-              <LeadBarChart data={leadActivityData} />
+              <LeadSourcesDonut data={leadSourcesData} total={leadsQuery.data?.leads.length ?? 0} />
             </Panel>
           </div>
         )}
       </section>
 
-      <section className="command-section" aria-labelledby="command-projects-heading">
-        <SectionHeading
-          id="command-projects-heading"
-          title="Project overview"
-          detail="Portfolio records and publishing status"
-          action={
-            <Link to="/app/projects" className="command-view-all">
-              All projects <ArrowRight size={14} />
-            </Link>
-          }
-        />
-        {projectsQuery.isPending ? (
-          <div className="command-project-grid">
-            {[0, 1, 2].map((item) => (
-              <div className="command-project-skeleton" key={item} />
-            ))}
-          </div>
-        ) : projectsQuery.isError ? (
-          <InlineQueryError
-            message="Projects could not be loaded."
-            onRetry={() => void projectsQuery.refetch()}
-          />
-        ) : activeProjects.length === 0 ? (
-          <EmptyPanel
-            icon={<Building2 size={20} />}
-            title="No published projects"
-            detail={
-              (dashboardQuery.data?.projects ?? 0) > 0
-                ? `${formatNumber(dashboardQuery.data?.projects ?? 0)} project records exist, but none are currently published.`
-                : "Projects added to this organization will appear here."
-            }
-            action={
-              <Link to="/app/projects" className="command-primary-link">
-                Open projects <ArrowRight size={14} />
-              </Link>
-            }
-          />
-        ) : (
-          <>
-            <div className="command-project-photo-note">
-              <img src={residenceBalcony} alt="MAVROS residential property portfolio" />
-              <span>
-                <Home size={15} /> Portfolio imagery
-              </span>
-              <small>Images are illustrative; project-specific photo mapping is not stored.</small>
-            </div>
-            <div className="command-project-grid">
-              {activeProjects.slice(0, 3).map((project) => (
-                <Link
-                  key={project.id}
-                  to="/app/projects/$id"
-                  params={{ id: project.id }}
-                  className="command-project-card"
-                >
-                  <div className="command-project-card-top">
-                    <span className="command-project-icon">
-                      <Building2 size={17} />
-                    </span>
-                    <span
-                      className={`command-status-pill ${project.status === "published" ? "is-success" : "is-neutral"}`}
-                    >
-                      <span /> {project.status}
-                    </span>
-                  </div>
-                  <div className="command-project-card-content">
-                    <h3>{project.name}</h3>
-                    <p className="command-project-location">
-                      {project.location || "Location not provided"}
-                    </p>
-                    {project.tagline && (
-                      <p className="command-project-tagline">{project.tagline}</p>
-                    )}
-                    <div className="command-project-meta">
-                      <span>Project status</span>
-                      <strong>{project.status === "published" ? "Published" : "Draft"}</strong>
-                    </div>
-                    <p className="command-project-progress-note">
-                      Project progress is not tracked in the current data.
-                    </p>
-                    <div className="command-project-footer">
-                      <span>{project.possession || "Possession not provided"}</span>
-                      <ArrowUpRight size={15} />
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </>
-        )}
-      </section>
-
-      <div className="command-two-column">
+      <div className="command-three-column">
         <section className="command-section" aria-labelledby="command-visits-heading">
           <SectionHeading
             id="command-visits-heading"
-            title="Upcoming site visits"
+            title="Upcoming visits"
             detail="Scheduled visits from organization records"
             action={
               <Link to="/app/$module" params={{ module: "visits" }} className="command-view-all">
@@ -515,7 +448,7 @@ export function OverviewPage() {
         <section className="command-section" aria-labelledby="command-tasks-heading">
           <SectionHeading
             id="command-tasks-heading"
-            title="Tasks & follow-ups"
+            title="Pending tasks"
             detail="Latest stored tasks (maximum 100 records)"
             action={
               <Link to="/app/$module" params={{ module: "tasks" }} className="command-view-all">
@@ -576,64 +509,16 @@ export function OverviewPage() {
                       >
                         <span /> {statusLabel(task.status)}
                       </span>
+                      <span
+                        className={`command-priority-badge ${getPriorityLabel(task).toLowerCase().replace(" ", "-")}`}
+                      >
+                        {getPriorityLabel(task)}
+                      </span>
                     </div>
                   ))}
                 </div>
               )}
             </>
-          )}
-        </section>
-      </div>
-
-      <div className="command-two-column command-lower-grid">
-        <section className="command-section" aria-labelledby="command-activity-heading">
-          <SectionHeading
-            id="command-activity-heading"
-            title="Recent activity"
-            detail="Latest changes recorded by the database"
-            action={
-              <Link to="/app/activity" className="command-view-all">
-                Activity log <ArrowRight size={14} />
-              </Link>
-            }
-          />
-          {activityQuery.isPending ? (
-            <PanelLoading rows={3} />
-          ) : activityQuery.isError ? (
-            <InlineQueryError
-              message="Recent activity could not be loaded."
-              onRetry={() => void activityQuery.refetch()}
-            />
-          ) : activityQuery.data.length === 0 ? (
-            <EmptyPanel
-              icon={<Activity size={20} />}
-              title="No recent activity"
-              detail="Recorded project, inventory, and lead changes will appear here."
-            />
-          ) : (
-            <div className="command-activity-list">
-              {activityQuery.data.slice(0, 5).map((event) => (
-                <div className="command-activity-row" key={event.id}>
-                  <span className="command-activity-icon">
-                    <Activity size={14} />
-                  </span>
-                  <span className="command-row-main">
-                    <strong>
-                      {statusLabel(event.action)} {statusLabel(event.entity_type)}
-                    </strong>
-                    <span>
-                      {event.actor_user_id === developerSession.user.id
-                        ? "You"
-                        : event.actor_user_id
-                          ? "Organization member"
-                          : "System"}{" "}
-                      · Record {event.entity_id.slice(0, 8)}
-                    </span>
-                  </span>
-                  <time>{formatDate(event.created_at, { month: "short", day: "numeric" })}</time>
-                </div>
-              ))}
-            </div>
           )}
         </section>
 
@@ -835,13 +720,19 @@ function StatusBarChart({ data }: { data: Array<{ name: string; value: number }>
   );
 }
 
-function InventoryDonut({
+function LeadSourcesDonut({
   data,
   total,
 }: {
-  data: Array<{ name: string; value: number; color: string }>;
+  data: Array<{ name: string; value: number }>;
   total: number;
 }) {
+  const colors: Record<string, string> = {
+    Website: "#39d5e5",
+    Referral: "#35bdab",
+    Campaign: "#a895e8",
+    Other: "#8295a1",
+  };
   return (
     <div className="command-donut-layout">
       <div className="command-donut-chart">
@@ -857,7 +748,7 @@ function InventoryDonut({
               stroke="none"
             >
               {data.map((item) => (
-                <Cell key={item.name} fill={item.color} />
+                <Cell key={item.name} fill={colors[item.name] ?? "#657579"} />
               ))}
             </Pie>
             <Tooltip
@@ -872,62 +763,33 @@ function InventoryDonut({
         </ResponsiveContainer>
         <div className="command-donut-total">
           <strong>{formatNumber(total)}</strong>
-          <small>units</small>
+          <small>leads</small>
         </div>
       </div>
       <div className="command-donut-legend">
         {data.map((item) => (
           <div key={item.name}>
             <span>
-              <i style={{ backgroundColor: item.color }} />
+              <i style={{ backgroundColor: colors[item.name] ?? "#657579" }} />
               {item.name}
             </span>
             <strong>{formatNumber(item.value)}</strong>
           </div>
         ))}
+        {data.length === 0 && (
+          <div className="command-donut-empty">
+            <span>No lead source data</span>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-function LeadBarChart({ data }: { data: Array<{ name: string; value: number }> }) {
+function ChartSkeletons({ count }: { count: number }) {
   return (
-    <div className="command-chart-wrap">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 10, right: 8, left: -20, bottom: 0 }}>
-          <CartesianGrid stroke="rgba(220,240,235,0.07)" vertical={false} />
-          <XAxis
-            dataKey="name"
-            tick={{ fill: "#91a09e", fontSize: 9 }}
-            axisLine={false}
-            tickLine={false}
-            interval={0}
-          />
-          <YAxis
-            allowDecimals={false}
-            tick={{ fill: "#778381", fontSize: 10 }}
-            axisLine={false}
-            tickLine={false}
-          />
-          <Tooltip
-            contentStyle={{
-              background: "#182121",
-              border: "1px solid rgba(220,240,235,0.12)",
-              borderRadius: 10,
-              color: "#f4f0e8",
-            }}
-          />
-          <Bar dataKey="value" name="Leads" fill="#39d5e5" radius={[4, 4, 0, 0]} maxBarSize={28} />
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-  );
-}
-
-function ChartSkeletons() {
-  return (
-    <div className="command-chart-grid" aria-label="Loading analytics">
-      {[0, 1, 2].map((item) => (
+    <div className="command-chart-grid-two" aria-label="Loading analytics">
+      {Array.from({ length: count }, (_, item) => (
         <div className="command-chart-skeleton" key={item} />
       ))}
     </div>
