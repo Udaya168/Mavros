@@ -123,37 +123,31 @@ const solutionPanels = [
     src: residenceBalcony,
     alt: "Luxury apartment balcony overlooking landscaped grounds",
     title: "Luxury Apartments",
-    subtitle: "Elevated city living",
   },
   {
     src: pool,
     alt: "Contemporary residential property beside a private swimming pool",
     title: "Modern Villas",
-    subtitle: "Architecture and escape",
   },
   {
     src: interior,
     alt: "Premium living room with expansive windows and warm finishes",
     title: "Premium Living Rooms",
-    subtitle: "Spaces made for living",
   },
   {
     src: amenityJogging,
     alt: "Landscaped residential community garden and walking path",
     title: "Residential Communities",
-    subtitle: "A connected neighborhood",
   },
   {
     src: residenceBedroom,
     alt: "Refined luxury bedroom with a landscaped outlook",
     title: "Luxury Interiors",
-    subtitle: "Thoughtful details",
   },
   {
     src: sales,
     alt: "Property consultant presenting a development to prospective buyers",
     title: "Property Consultation",
-    subtitle: "Personal guidance",
   },
 ];
 
@@ -1084,38 +1078,42 @@ function Home() {
         </section>
 
         <section id="pilot" className="home-section bg-[#102039] text-white">
-          <div className="home-container grid gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:gap-20">
-            <div className="home-pilot-copy">
+          <div className="home-container">
+            <div className="home-pilot-header">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#8ab8ff]">
                 Pilot conversation
               </p>
-              <h2 className="mt-5 max-w-xl font-display text-4xl leading-[1.08] tracking-[-0.04em] sm:text-5xl">
+              <h2 className="mt-5 max-w-2xl font-display text-4xl leading-[1.08] tracking-[-0.04em] sm:text-5xl">
                 Start with one project. Prove the workflow. Scale with confidence.
               </h2>
-              <p className="mt-5 max-w-lg text-sm leading-7 text-white/65">
+              <p className="mt-5 max-w-xl text-sm leading-7 text-white/65">
                 A focused pilot discussion can shape a useful first step around your project and
                 team—without assuming a price, timeline or outcome.
               </p>
-              <ul className="mt-8 space-y-3">
-                {[
-                  "One developer and one selected property project",
-                  "Project information reviewed with your team",
-                  "Buyer enquiry and sales workflow to explore",
-                  "Defined measures, review points and expansion discussion",
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-xs leading-5 text-white/80">
-                    <Check size={15} className="mt-0.5 shrink-0 text-[#8ab8ff]" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-8 text-[10px] leading-5 text-white/65">
-                This website is a prototype. Pilot availability and commercial terms are not
-                specified here.
-              </p>
             </div>
 
-            <div className="home-pilot-card rounded-[24px] bg-white p-5 text-[#15253d] shadow-[0_24px_70px_rgba(0,0,0,0.18)] sm:p-8">
+            <div className="home-pilot-body grid gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:gap-20">
+              <div className="home-pilot-copy">
+                <ul className="space-y-3">
+                  {[
+                    "One developer and one selected property project",
+                    "Project information reviewed with your team",
+                    "Buyer enquiry and sales workflow to explore",
+                    "Defined measures, review points and expansion discussion",
+                  ].map((item) => (
+                    <li key={item} className="flex items-start gap-3 text-xs leading-5 text-white/80">
+                      <Check size={15} className="mt-0.5 shrink-0 text-[#8ab8ff]" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-8 text-[10px] leading-5 text-white/65">
+                  This website is a prototype. Pilot availability and commercial terms are not
+                  specified here.
+                </p>
+              </div>
+
+              <div className="home-pilot-card rounded-[24px] bg-white p-5 text-[#15253d] shadow-[0_24px_70px_rgba(0,0,0,0.18)] sm:p-8">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h3 className="font-display text-2xl">Discuss a pilot</h3>
@@ -1241,7 +1239,8 @@ function Home() {
               </form>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
         <section id="faq" className="home-section">
           <div className="home-container grid gap-8 lg:grid-cols-[0.65fr_1.35fr] lg:gap-20">

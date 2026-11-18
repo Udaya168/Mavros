@@ -36,7 +36,7 @@ import { signOutPublicUser } from "@/lib/public-auth";
 import { listDeveloperProjects } from "../developer-data";
 import { listDeveloperLeads } from "../leads-data";
 import { listDeveloperNotifications } from "../workspace-data";
-import { GradientASCII } from "../components/GradientASCII";
+import { PortalBackground } from "@/components/portal-background";
 import "./developer-portal.css";
 
 const navigationGroups = [
@@ -171,6 +171,7 @@ export function DeveloperLayout() {
 
   return (
     <div className={`developer-portal${sidebarCollapsed ? " is-sidebar-collapsed" : ""}`}>
+      <PortalBackground />
       {sidebarOpen && (
         <button
           type="button"
@@ -253,7 +254,6 @@ export function DeveloperLayout() {
       </aside>
 
       <div className="developer-workspace">
-        <GradientASCII />
         <header className="developer-topbar">
           <div className="developer-topbar-title">
             <button

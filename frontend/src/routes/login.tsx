@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { Eye, EyeOff } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { z } from "zod";
 
 import { PublicAuthLayout } from "@/components/public-auth-layout";
@@ -108,44 +108,58 @@ function Login() {
     >
       <form className="space-y-5" onSubmit={handleSubmit}>
         <div className="space-y-2">
-          <Label htmlFor="login-email">Email address</Label>
-          <Input
-            id="login-email"
-            type="email"
-            autoComplete="email"
-            required
-            maxLength={320}
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            className="h-11 border-[#d5deea] bg-white"
-          />
+          <Label htmlFor="login-email" className="text-sm font-medium text-[#dce4e2]">
+            Email address
+          </Label>
+          <div className="relative">
+            <span className="pointer-events-none absolute inset-y-0 left-0 inline-flex w-11 items-center justify-center text-[#6e8580]">
+              <Mail aria-hidden="true" className="size-4" />
+            </span>
+            <Input
+              id="login-email"
+              type="email"
+              autoComplete="email"
+              placeholder="admin@mavros.com"
+              required
+              maxLength={320}
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              className="h-12 border-[#163832] bg-[#081513]/70 pl-11 text-sm text-[#f4f7f6] placeholder:text-[#556c67] focus-visible:border-[#27c9cd] focus-visible:ring-[#27c9cd]/20"
+            />
+          </div>
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3">
-            <Label htmlFor="login-password">Password</Label>
+            <Label htmlFor="login-password" className="text-sm font-medium text-[#dce4e2]">
+              Password
+            </Label>
             <Link
               to="/forgot-password"
-              className="rounded text-xs font-semibold text-[#1268e8] hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1268e8]"
+              className="rounded text-xs font-semibold text-[#27c9cd] hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#27c9cd]"
             >
               Forgot password?
             </Link>
           </div>
           <div className="relative">
+            <span className="pointer-events-none absolute inset-y-0 left-0 inline-flex w-11 items-center justify-center text-[#6e8580]">
+              <Lock aria-hidden="true" className="size-4" />
+            </span>
             <Input
               id="login-password"
               type={showPassword ? "text" : "password"}
               autoComplete="current-password"
+              placeholder="••••••••••••"
               required
               maxLength={128}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="h-11 border-[#d5deea] bg-white pr-12"
+              className="h-12 border-[#163832] bg-[#081513]/70 pl-11 pr-12 text-sm text-[#f4f7f6] placeholder:text-[#556c67] focus-visible:border-[#27c9cd] focus-visible:ring-[#27c9cd]/20"
             />
             <button
               type="button"
               onClick={() => setShowPassword((visible) => !visible)}
               aria-label={showPassword ? "Hide password" : "Show password"}
-              className="absolute inset-y-0 right-0 inline-flex w-11 items-center justify-center rounded-r-md text-[#64748b] hover:text-[#1268e8] focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-[#1268e8]"
+              className="absolute inset-y-0 right-0 inline-flex w-11 items-center justify-center rounded-r-md text-[#6e8580] hover:text-[#27c9cd] focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-[#27c9cd]"
             >
               {showPassword ? (
                 <EyeOff aria-hidden="true" className="size-4" />
@@ -156,22 +170,23 @@ function Login() {
           </div>
         </div>
         {error && (
-          <p className="text-sm text-red-700" role="alert">
+          <p className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400" role="alert">
             {error}
           </p>
         )}
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="h-11 w-full bg-[#1268e8] text-white hover:bg-[#0d58cb]"
+          className="h-12 w-full gap-2 rounded-xl bg-[#27c9cd] font-semibold text-[#040807] shadow-lg shadow-[#27c9cd]/15 hover:bg-[#34d9dd] hover:shadow-[#27c9cd]/25"
         >
           {isSubmitting ? "Signing in…" : "Sign in"}
+          {!isSubmitting && <ArrowRight aria-hidden="true" className="size-4" />}
         </Button>
-        <p className="text-center text-sm text-[#64748b]">
+        <p className="pt-1 text-center text-sm text-[#8ba09b]">
           New to Mavros?{" "}
           <Link
             to="/signup"
-            className="font-semibold text-[#1268e8] hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1268e8]"
+            className="font-semibold text-[#27c9cd] hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#27c9cd]"
           >
             Create an account
           </Link>

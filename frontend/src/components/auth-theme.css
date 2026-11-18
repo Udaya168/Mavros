@@ -613,119 +613,271 @@
 }
 
 .public-auth--login {
-  --auth-black: #10202c;
-  --auth-secondary: #f5f3ed;
-  --auth-card: #ffffff;
-  --auth-text: #172b38;
-  --auth-muted: #64748b;
-  --auth-accent: #39d5e5;
-  --auth-border: #d9ded9;
+  --auth-black: #040707;
+  --auth-secondary: #081413;
+  --auth-card: #091715;
+  --auth-text: #f4f7f6;
+  --auth-muted: #8ba09b;
+  --auth-accent: #27c9cd;
+  --auth-border: rgb(39 201 205 / 20%);
 
-  background: #f5f3ed;
-  color: #172b38;
-  color-scheme: light;
+  background: #040707;
+  color: #f4f7f6;
+  color-scheme: dark;
 }
 
 .public-auth--login .public-auth__grid {
-  grid-template-columns: minmax(0, 0.45fr) minmax(0, 0.55fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: 100vh;
+  min-height: 100svh;
 }
 
 .public-auth--login .public-auth__brand {
-  --auth-text: #f4f0e8;
-  --auth-muted: rgb(244 240 232 / 66%);
-  --auth-border: rgb(244 240 232 / 14%);
+  --auth-text: #f4f7f6;
+  --auth-muted: #8ba09b;
+  --auth-border: rgb(39 201 205 / 18%);
 
   display: flex;
+  position: relative;
+  overflow: hidden;
+  padding: clamp(2.5rem, 5vw, 5rem);
   background:
-    radial-gradient(ellipse at 82% 45%, rgb(57 213 229 / 10%), transparent 48%),
-    radial-gradient(ellipse at 8% 95%, rgb(57 213 229 / 7%), transparent 42%),
-    linear-gradient(140deg, #172b38 0%, #10202c 100%);
+    radial-gradient(ellipse at 88% 28%, rgb(39 201 205 / 16%), transparent 45%),
+    radial-gradient(ellipse at 20% 85%, rgb(19 47 42 / 45%), transparent 55%),
+    linear-gradient(160deg, #091413 0%, #040707 100%);
+  border-right: 1px solid rgb(39 201 205 / 12%);
 }
 
 .public-auth--login .public-auth__brand::after {
-  border-right-color: rgb(244 240 232 / 12%);
+  display: none;
+}
+
+/* Subtle ASCII texture at top of left panel */
+.public-auth__ascii-texture {
+  position: absolute;
+  top: 1.5rem;
+  left: 2rem;
+  right: 2rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.5em;
+  line-height: 1.8;
+  color: rgb(39 201 205 / 18%);
+  white-space: pre;
+  pointer-events: none;
+  user-select: none;
+  mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+}
+
+/* Luxury architectural building visual container */
+.luxury-building-visual {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.luxury-building-image {
+  position: absolute;
+  right: -2%;
+  bottom: -2%;
+  width: min(72%, 36rem);
+  height: min(52%, 26rem);
+  object-fit: cover;
+  object-position: bottom right;
+  opacity: 0.65;
+  filter: brightness(0.72) contrast(1.18) saturate(0.92);
+  mask-image: radial-gradient(
+    ellipse 95% 95% at 95% 95%,
+    rgba(0, 0, 0, 0.95) 0%,
+    rgba(0, 0, 0, 0.8) 40%,
+    rgba(0, 0, 0, 0.25) 70%,
+    transparent 90%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 95% 95% at 95% 95%,
+    rgba(0, 0, 0, 0.95) 0%,
+    rgba(0, 0, 0, 0.8) 40%,
+    rgba(0, 0, 0, 0.25) 70%,
+    transparent 90%
+  );
+}
+
+/* Atmospheric emerald & charcoal blend over the building */
+.luxury-building-fade-overlay {
+  position: absolute;
+  inset: 0;
   background:
-    linear-gradient(135deg, rgb(255 255 255 / 3%), transparent 44%),
-    linear-gradient(0deg, rgb(8 20 27 / 15%), transparent 50%);
+    radial-gradient(ellipse at 25% 45%, #040707 35%, rgba(4, 7, 7, 0.8) 65%, transparent 100%),
+    linear-gradient(to top, rgba(4, 7, 7, 0.7) 0%, transparent 40%),
+    linear-gradient(to left, transparent 65%, #040707 98%);
+  pointer-events: none;
+}
+
+/* Subtle glowing cyan/teal horizon accent */
+.luxury-building-horizon-line {
+  position: absolute;
+  bottom: 22%;
+  left: 5%;
+  width: 55%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, #27c9cd 45%, rgba(39, 201, 205, 0.15) 85%, transparent 100%);
+  filter: blur(1.5px);
+  transform: rotate(-8deg);
+  opacity: 0.65;
+}
+
+.public-auth--login .public-auth__logo {
+  position: relative;
+  z-index: 3;
+  gap: 0.9rem;
+}
+
+.public-auth--login .public-auth__logo-mark {
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid rgb(39 201 205 / 35%);
+  border-radius: 0.85rem;
+  background: linear-gradient(145deg, #18b3bd 0%, #11443f 100%);
+  box-shadow: 0 4px 20px rgb(39 201 205 / 22%);
+}
+
+.public-auth--login .public-auth__logo-name {
+  font-size: 0.85rem;
+  font-weight: 750;
+  letter-spacing: 0.18em;
+  color: #f4f7f6;
+}
+
+.public-auth--login .public-auth__logo-subtitle {
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: #6e8882;
+}
+
+.public-auth--login .public-auth__story {
+  position: relative;
+  z-index: 3;
+  width: min(100%, 34rem);
+  padding-block: 2.5rem 4rem;
+}
+
+.public-auth--login .public-auth__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0.95rem;
+  border: 1px solid rgb(39 201 205 / 24%);
+  border-radius: 999px;
+  background: rgb(8 21 19 / 75%);
+  backdrop-filter: blur(10px);
+  color: #c9ded9;
+  font-size: 0.74rem;
+  font-weight: 500;
 }
 
 .public-auth--login .public-auth__headline {
-  max-width: 10ch;
-  font-size: clamp(3rem, 5vw, 5.2rem);
+  margin: 1.8rem 0 0;
+  color: #f4f7f6;
+  font-family: var(--font-display), "Fraunces", Georgia, serif;
+  font-size: clamp(2.8rem, 4.2vw, 4.5rem);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
 }
 
+.public-auth--login .public-auth__story-copy {
+  max-width: 28rem;
+  margin: 1.4rem 0 0;
+  color: #8ba09b;
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.public-auth--login .public-auth__copyright {
+  position: relative;
+  z-index: 3;
+  color: #556c67;
+  font-size: 0.68rem;
+}
+
+/* Right Panel & Login Card */
 .public-auth--login .public-auth__panel {
-  background: radial-gradient(ellipse at 85% 12%, rgb(57 213 229 / 5%), transparent 38%), #f5f3ed;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.8rem clamp(1.5rem, 5vw, 4.5rem);
+  background:
+    radial-gradient(ellipse at 50% 50%, rgb(19 47 42 / 30%), transparent 65%),
+    #040707;
+}
+
+.public-auth--login .public-auth__header {
+  min-height: 2.5rem;
+}
+
+.public-auth--login .public-auth__back {
+  color: #728b85;
+  font-size: 0.8rem;
+}
+
+.public-auth--login .public-auth__back:hover {
+  color: #27c9cd;
+}
+
+.public-auth--login .public-auth__content {
+  display: flex;
+  width: 100%;
+  max-width: 32rem;
+  align-self: center;
+  padding-block: 1rem;
+}
+
+.public-auth--login .public-auth__card {
+  width: 100%;
+  padding: clamp(2rem, 4vw, 3rem);
+  border: 1px solid rgb(39 201 205 / 22%);
+  border-radius: 1.35rem;
+  background: rgb(8 18 16 / 78%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 0 35px rgb(39 201 205 / 6%),
+    0 25px 65px rgb(0 0 0 / 55%),
+    inset 0 1px 0 rgb(255 255 255 / 4%);
 }
 
 .public-auth--login .public-auth__title {
-  color: #172b38;
+  margin: 0;
+  color: #f4f7f6;
+  font-family: var(--font-display), "Fraunces", Georgia, serif;
+  font-size: clamp(2.1rem, 3.2vw, 2.75rem);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
 }
 
 .public-auth--login .public-auth__description {
-  color: #64748b;
+  margin: 0.75rem 0 0;
+  color: #8ba09b;
+  font-size: 0.88rem;
+  line-height: 1.6;
 }
 
-.public-auth--login form label {
-  color: #172b38;
+.public-auth--login .public-auth__form-content {
+  margin-top: 2rem;
 }
 
-.public-auth--login form input {
-  border-color: #d9ded9;
-  background: #fff;
-  color: #172b38;
-  box-shadow: 0 1px 2px rgb(23 43 56 / 4%);
-}
-
-.public-auth--login form input::placeholder {
-  color: #8c918f;
-}
-
-.public-auth--login form input:focus-visible {
-  border-color: #39d5e5;
-  box-shadow: 0 0 0 3px rgb(57 213 229 / 15%);
-}
-
-.public-auth--login form button[type="submit"] {
-  background: #39d5e5;
-  color: #10202c;
-  box-shadow: 0 4px 12px rgb(16 32 44 / 8%);
-}
-
-.public-auth--login form button[type="submit"]:hover:not(:disabled) {
-  border-color: #27c7d8;
-  background: #27c7d8;
-  box-shadow: 0 6px 18px rgb(57 213 229 / 20%);
-}
-
-.public-auth--login form a {
-  color: #159ead;
-}
-
-.public-auth--login form a:hover {
-  color: #117d8a;
-}
-
-.public-auth--login form button[aria-label*="password"] {
-  color: #64748b;
-}
-
-.public-auth--login form button[aria-label*="password"]:hover {
-  color: #159ead;
-}
-
-.public-auth--login .public-auth__security {
-  color: #87918f;
+.public-auth--login .public-auth__footer {
+  margin-top: 1rem;
 }
 
 .public-auth--login .public-auth__footer .public-auth__mobile-copyright {
-  color: #87918f;
-}
-
-.public-auth--login form p[role="alert"] {
-  border-color: rgb(187 65 65 / 20%);
-  background: rgb(187 65 65 / 5%);
-  color: #a63e3e;
+  color: #556c67;
+  font-size: 0.68rem;
 }
 
 @media (max-width: 1023px) {
@@ -734,97 +886,28 @@
   }
 
   .public-auth--login .public-auth__brand {
-    min-height: 16rem;
-    padding: 1.5rem clamp(1.25rem, 5vw, 2.5rem);
-  }
-
-  .public-auth--login .public-auth__story {
-    width: 100%;
-    padding-block: 1.15rem 0;
-  }
-
-  .public-auth--login .public-auth__badge {
-    display: none;
-  }
-
-  .public-auth--login .public-auth__headline {
-    max-width: 17ch;
-    margin-top: 0;
-    font-size: clamp(1.8rem, 5.5vw, 2.55rem);
-    line-height: 1.05;
-  }
-
-  .public-auth--login .public-auth__story-copy {
-    max-width: 38rem;
-    margin-top: 0.6rem;
-    font-size: 0.76rem;
-    line-height: 1.55;
-  }
-
-  .public-auth--login .public-auth__copyright {
     display: none;
   }
 
   .public-auth--login .public-auth__panel {
-    min-height: auto;
-    padding: 1.1rem clamp(1.25rem, 5vw, 2.5rem) 1.4rem;
-  }
-
-  .public-auth--login .public-auth__header {
-    min-height: 1.8rem;
+    min-height: 100vh;
+    padding: 1.5rem 1.25rem;
+    justify-content: center;
   }
 
   .public-auth--login .public-auth__mobile-brand {
-    display: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: #f4f7f6;
+    font-size: 0.8rem;
+    font-weight: 750;
+    letter-spacing: 0.15em;
+    text-decoration: none;
   }
 
-  .public-auth--login .public-auth__content {
-    width: min(100%, 30rem);
-    padding-block: 2rem;
-  }
-
-  .public-auth--login .public-auth__mobile-kicker {
-    display: none;
-  }
-
-  .public-auth--login .public-auth__footer {
-    margin-top: 0;
-  }
-
-  .public-auth--login .public-auth__footer .public-auth__mobile-copyright {
-    display: none;
-  }
-}
-
-@media (max-width: 480px) {
-  .public-auth--login .public-auth__brand {
-    min-height: 14.5rem;
-    padding: 1.1rem 1.15rem;
-  }
-
-  .public-auth--login .public-auth__logo-mark {
-    width: 2.35rem;
-    height: 2.35rem;
-  }
-
-  .public-auth--login .public-auth__story {
-    padding-top: 0.85rem;
-  }
-
-  .public-auth--login .public-auth__headline {
-    max-width: 15ch;
-    font-size: clamp(1.65rem, 7.5vw, 2.05rem);
-  }
-
-  .public-auth--login .public-auth__story-copy {
-    font-size: 0.7rem;
-  }
-
-  .public-auth--login .public-auth__panel {
-    padding-inline: 1.15rem;
-  }
-
-  .public-auth--login .public-auth__content {
-    padding-block: 1.55rem;
+  .public-auth--login .public-auth__card {
+    padding: 2rem 1.5rem;
+    border-radius: 1.15rem;
   }
 }

@@ -35,6 +35,7 @@ import { Link } from "@tanstack/react-router";
 import { Cell, Pie, PieChart } from "recharts";
 
 import { BackButton } from "@/components/back-button";
+import { PortalBackground } from "@/components/portal-background";
 import { listControlSecurityAudit, listControlSupportRequests } from "@/lib/control-auth";
 
 import "./control-center.css";
@@ -263,6 +264,7 @@ function Pagination({
 export function ControlCenterLoading() {
   return (
     <main className="control-loading" role="status" aria-live="polite">
+      <PortalBackground />
       <div className="control-loading-mark">
         <Command aria-hidden="true" />
       </div>
@@ -452,6 +454,7 @@ export function ControlCenterDashboard({
 
   return (
     <div className={`control-center${collapsed ? " is-collapsed" : ""}`}>
+      <PortalBackground />
       {mobileNavOpen && (
         <button
           type="button"

@@ -808,30 +808,50 @@ html {
 
 .home-editorial .home-section-cta > .home-container > .relative {
   z-index: 2;
-  width: min(100%, 83rem);
+  width: min(100%, 54rem);
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.home-editorial .home-section-cta > .home-container > .relative > div:first-child {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 48rem;
   margin-inline: auto;
 }
 
 .home-editorial .home-section-cta > .home-container > .relative > div > p:first-child {
   color: var(--editorial-blue);
+  text-align: center;
 }
 
 .home-editorial .home-section-cta h2 {
-  max-width: 14ch;
+  max-width: 18ch;
   color: var(--editorial-white);
   font-size: clamp(3rem, 6vw, 6.3rem);
   line-height: 0.98;
+  text-align: center;
+  margin-inline: auto;
 }
 
 .home-editorial .home-section-cta > .home-container > .relative > div > p:last-child {
-  max-width: 34rem;
+  max-width: 38rem;
   color: rgb(245 242 236 / 73%);
+  text-align: center;
+  margin-inline: auto;
 }
 
 .home-editorial .home-section-cta a {
   border: 1px solid var(--editorial-white);
   background: var(--editorial-white);
   color: var(--editorial-black);
+  margin-top: 2rem;
+  align-self: center;
 }
 
 .home-editorial .home-footer {
@@ -969,7 +989,8 @@ html {
 
   .home-editorial .home-section-cta > .home-container > .relative {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    text-align: center;
   }
 
   .home-editorial .home-footer-grid {
@@ -1294,8 +1315,8 @@ html {
 }
 
 .home-editorial .home-journey-step:hover {
-  background: linear-gradient(180deg, rgb(85 213 223 / 6%), transparent 65%);
-  transform: translateY(-0.4rem);
+  background: transparent;
+  transform: none;
 }
 
 .home-editorial .home-journey-marker {
@@ -1841,15 +1862,52 @@ html {
 }
 
 .home-editorial #pilot .home-container {
-  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
-  align-items: start;
-  gap: clamp(2.5rem, 4vw, 4rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(2.5rem, 5vw, 4rem);
 }
 
-.home-editorial .home-pilot-copy h2 {
-  max-width: 10ch;
-  font-size: clamp(3rem, 5.2vw, 5.2rem);
-  line-height: 0.99;
+.home-editorial #pilot .home-pilot-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 52rem;
+  margin-inline: auto;
+}
+
+.home-editorial #pilot .home-pilot-header p:first-child {
+  color: #39d5e5;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.home-editorial #pilot .home-pilot-header h2 {
+  max-width: 20ch;
+  font-size: clamp(2.6rem, 4.5vw, 4.2rem);
+  line-height: 1.02;
+  text-align: center;
+  margin: 0.85rem auto 0;
+}
+
+.home-editorial #pilot .home-pilot-header p:last-child {
+  max-width: 38rem;
+  margin: 1rem auto 0;
+  color: rgb(244 240 232 / 68%);
+  font-size: clamp(0.9rem, 1.1vw, 1rem);
+  line-height: 1.85;
+  text-align: center;
+}
+
+.home-editorial #pilot .home-pilot-body {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+  align-items: start;
+  gap: clamp(2.5rem, 4vw, 4rem);
 }
 
 .home-editorial #pilot .home-pilot-card {
@@ -1939,9 +1997,11 @@ html {
 }
 
 .home-editorial .home-section-cta h2 {
-  max-width: 11ch;
+  max-width: 16ch;
   font-size: clamp(3.2rem, 6.5vw, 6.4rem);
   line-height: 0.98;
+  text-align: center;
+  margin-inline: auto;
 }
 
 .home-editorial .home-section-cta > .home-container > .relative > div > p:last-child {
@@ -2044,7 +2104,7 @@ html {
   .home-editorial #veytrix .home-container,
   .home-editorial #advisor-demo .home-container,
   .home-editorial #trust .home-container,
-  .home-editorial #pilot .home-container {
+  .home-editorial #pilot .home-pilot-body {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -2333,10 +2393,13 @@ html {
 }
 
 .home-editorial #how-it-works .home-container > .home-journey-intro {
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(18rem, 0.75fr);
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: clamp(2rem, 7vw, 8rem);
+  text-align: center;
+  max-width: 54rem;
+  margin-inline: auto;
+  gap: 0;
 }
 
 .home-editorial #how-it-works .home-journey-kicker {
@@ -2349,23 +2412,25 @@ html {
 }
 
 .home-editorial #how-it-works .home-journey-heading {
-  max-width: 14ch;
-  margin: 1.1rem 0 0;
+  max-width: 22ch;
+  margin: 0.85rem auto 0;
   color: #f4f0e8;
   font-family: var(--font-display);
   font-size: clamp(2.6rem, 4.5vw, 4.2rem);
   font-weight: 400;
   letter-spacing: -0.045em;
   line-height: 1.02;
+  text-align: center;
 }
 
 .home-editorial #how-it-works .home-container > .home-journey-intro .home-journey-summary {
-  max-width: 35rem;
-  justify-self: end;
-  margin: 1.7rem 0 0;
+  max-width: 40rem;
+  justify-self: center;
+  margin: 1rem auto 0;
   color: rgb(244 240 232 / 68%);
   font-size: clamp(0.9rem, 1.1vw, 1rem);
   line-height: 1.85;
+  text-align: center;
 }
 
 .home-editorial #how-it-works .home-container > .home-journey-track {
@@ -2398,9 +2463,7 @@ html {
   background: transparent;
   padding: 0.1rem clamp(0.55rem, 1.2vw, 1.1rem) 1rem;
   text-align: center;
-  transition:
-    background-color 240ms ease,
-    transform 240ms ease;
+  transition: none;
 }
 
 .home-editorial #how-it-works .home-journey-step::before,
@@ -2412,8 +2475,8 @@ html {
   background: linear-gradient(90deg, rgb(57 213 229 / 30%), rgb(244 240 232 / 16%));
   content: "";
   transition:
-    background-color 240ms ease,
-    box-shadow 240ms ease;
+    background 300ms ease,
+    box-shadow 300ms ease;
 }
 
 .home-editorial #how-it-works .home-journey-step::before {
@@ -2434,16 +2497,16 @@ html {
 .home-editorial #how-it-works .home-journey-step:hover,
 .home-editorial #how-it-works .home-journey-step:focus-visible {
   z-index: 1;
-  background: radial-gradient(ellipse at 50% 2rem, rgb(57 213 229 / 8%), transparent 62%);
-  transform: translateY(-0.2rem);
+  background: transparent;
+  transform: none;
 }
 
 .home-editorial #how-it-works .home-journey-step:hover::before,
 .home-editorial #how-it-works .home-journey-step:hover::after,
 .home-editorial #how-it-works .home-journey-step:focus-visible::before,
 .home-editorial #how-it-works .home-journey-step:focus-visible::after {
-  background: #39d5e5;
-  box-shadow: 0 0 9px rgb(57 213 229 / 45%);
+  background: linear-gradient(90deg, #39d5e5, rgb(57 213 229 / 80%));
+  box-shadow: 0 0 10px rgb(57 213 229 / 50%);
 }
 
 .home-editorial #how-it-works .home-journey-step:focus-visible {
@@ -2463,20 +2526,23 @@ html {
   background: #0c0f10;
   color: #39d5e5;
   transition:
-    transform 240ms ease,
-    border-color 240ms ease,
-    background-color 240ms ease,
-    box-shadow 240ms ease;
+    transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 300ms ease,
+    background-color 300ms ease,
+    color 300ms ease,
+    box-shadow 300ms ease;
 }
 
 .home-editorial #how-it-works .home-journey-step:hover .home-journey-marker,
 .home-editorial #how-it-works .home-journey-step:focus-visible .home-journey-marker {
   border-color: #39d5e5;
-  background: #10191a;
+  background: #0f191a;
+  color: #e7fbff;
   box-shadow:
-    0 0 0 5px rgb(57 213 229 / 7%),
-    0 0 22px rgb(57 213 229 / 20%);
-  transform: scale(1.04);
+    0 0 0 4px rgb(57 213 229 / 10%),
+    0 0 20px rgb(57 213 229 / 30%),
+    0 0 35px rgb(57 213 229 / 12%);
+  transform: scale(1.07);
 }
 
 .home-editorial #how-it-works .home-journey-meta {
@@ -2489,6 +2555,7 @@ html {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  transition: color 280ms ease;
 }
 
 .home-editorial #how-it-works .home-journey-meta span:last-child {
@@ -2507,6 +2574,12 @@ html {
   letter-spacing: -0.035em;
   line-height: 1.15;
   text-transform: capitalize;
+  transition: color 280ms ease;
+}
+
+.home-editorial #how-it-works .home-journey-step:hover h3,
+.home-editorial #how-it-works .home-journey-step:focus-visible h3 {
+  color: #85ebf4;
 }
 
 .home-editorial #how-it-works .home-journey-step p {
@@ -2545,22 +2618,27 @@ html {
   }
 
   .home-editorial #how-it-works .home-container > .home-journey-intro {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0;
   }
 
   .home-editorial #how-it-works .home-journey-heading {
-    max-width: 12ch;
-    margin-top: 0.9rem;
+    max-width: 18ch;
+    margin: 0.9rem auto 0;
     font-size: clamp(2.45rem, 10vw, 3.4rem);
+    text-align: center;
   }
 
   .home-editorial #how-it-works .home-container > .home-journey-intro .home-journey-summary {
     max-width: 34rem;
-    justify-self: start;
-    margin-top: 0.5rem;
+    justify-self: center;
+    margin: 0.75rem auto 0;
     font-size: 0.88rem;
     line-height: 1.75;
+    text-align: center;
   }
 
   .home-editorial #how-it-works .home-container > .home-journey-track {
